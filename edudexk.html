@@ -1,0 +1,2154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduDesk AI - The solution of answers</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons for professional look -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PDF.js for PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        /* Custom font import and application */
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        /* Gmail-like Loading Animation */
+        
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111827;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .loading-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .gmail-loader {
+            width: 320px;
+            height: 8px;
+            background-image: linear-gradient(135deg, #4f46e5 0%, #4f46e5 25%, #4338ca 25%, #4338ca 50%, #4f46e5 50%, #4f46e5 75%, #4338ca 75%, #4338ca 95%, #4338ca 95%, #4338ca 100%);
+            background-repeat: repeat;
+            background-position: 0px 0px;
+            background-size: 16px 16px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gmail-loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: #111827;
+            animation: gmail-progress 3s ease-in-out infinite;
+        }
+        
+        @keyframes gmail-progress {
+            0% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .loading-text {
+            color: #9ca3af;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        /* Style for the responsive Sidebar */
+        
+        #sidebar {
+            width: 256px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+        
+        #sidebar.is-open {
+            transform: translateX(0);
+        }
+        /* Desktop Toggle Logic (PC/Large Screens) */
+        
+        @media (min-width: 768px) {
+            #main-content {
+                transition: padding-left 0.3s ease-in-out;
+            }
+            #sidebar {
+                transform: translateX(0) !important;
+            }
+            #main-content {
+                padding-left: 256px;
+                padding-top: 5rem;
+            }
+            .sidebar-closed-desktop #sidebar {
+                transform: translateX(-256px) !important;
+            }
+            .sidebar-closed-desktop #main-content {
+                padding-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+            }
+        }
+        /* Custom scrollbar for better appearance */
+        
+        .assistant-response::-webkit-scrollbar,
+        .chat-history::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .assistant-response::-webkit-scrollbar-thumb,
+        .chat-history::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 3px;
+        }
+        /* ChatGPT Aesthetic for Response Content */
+        
+        .assistant-response .prose p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .assistant-response .prose ul {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+        }
+        
+        .assistant-response .prose strong {
+            font-weight: 700;
+        }
+        /* Modal specific styling */
+        
+        .modal {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-content {
+            animation: slide-down 0.3s ease-out;
+        }
+        
+        @keyframes slide-down {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        /* Chat message styling */
+        
+        .message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            max-width: 85%;
+        }
+        
+        .user-message {
+            background-color: #4f46e5;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0.25rem;
+        }
+        
+        .assistant-message {
+            background-color: #374151;
+            color: #f3f4f6;
+            margin-right: auto;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+        /* File upload styling */
+        
+        .file-upload-container {
+            border: 2px dashed #4b5563;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload-container:hover {
+            border-color: #4f46e5;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        
+        .file-upload-container.dragover {
+            border-color: #4f46e5;
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            background-color: #1f2937;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        /* Settings styling */
+        
+        .settings-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .settings-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #f3f4f6;
+        }
+        /* Prompt generator styling */
+        
+        .prompt-category {
+            margin-bottom: 1rem;
+        }
+        
+        .prompt-option {
+            background-color: #1f2937;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .prompt-option:hover {
+            background-color: #374151;
+        }
+        
+        .ai-suggestion {
+            background-color: #1e3a8a;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .ai-suggestion:hover {
+            background-color: #1e40af;
+        }
+        /* PDF Viewer Styling */
+        
+        .pdf-container {
+            max-height: 70vh;
+            overflow: auto;
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+        }
+        
+        .pdf-page {
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .crop-area {
+            position: absolute;
+            border: 2px dashed #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+            cursor: move;
+        }
+        
+        .crop-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .crop-btn {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .crop-btn:hover {
+            background-color: #4338ca;
+        }
+        
+        .crop-btn.cancel {
+            background-color: #6b7280;
+        }
+        
+        .crop-btn.cancel:hover {
+            background-color: #4b5563;
+        }
+        /* Responsive adjustments */
+        
+        @media (max-width: 640px) {
+            .message {
+                max-width: 95%;
+            }
+            .file-upload-container {
+                padding: 1rem;
+            }
+            .gmail-loader {
+                width: 280px;
+            }
+            .pdf-container {
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 min-h-screen text-gray-100">
+    <!-- Loading Animation -->
+    <div id="loading-container" class="loading-container">
+        <div class="gmail-loader"></div>
+        <div class="loading-text">Loading EduDesk AI...</div>
+    </div>
+
+    <!-- 1. Fixed Top Navbar -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-40 bg-gray-800 shadow-xl border-b border-gray-700 h-16 flex items-center justify-between px-4 transition-all duration-300">
+        <!-- Left Side: Toggle and Logo -->
+        <div class="flex items-center">
+            <!-- Sidebar Toggle Button -->
+            <button id="sidebar-toggle" class="text-gray-300 hover:text-indigo-400 focus:outline-none 
+                       md:absolute md:top-1/2 md:-translate-y-1/2 md:left-4 md:z-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            </button>
+
+            <!-- Navbar Content Wrapper with Logo -->
+            <div id="navbar-content" class="ml-12 flex items-center text-xl font-bold text-gray-100 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open text-indigo-400 mr-2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>                EduDesk
+            </div>
+        </div>
+
+        <!-- Right Side: Auth Status and New Chat Button -->
+        <div class="flex items-center space-x-4">
+            <button id="new-chat-button" class="hidden md:flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus mr-1"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                New Chat
+            </button>
+            <div id="auth-status-container" class="flex items-center space-x-4">
+                <!-- Content injected by renderNavbarUserStatus -->
+            </div>
+            <button id="settings-button" class="text-gray-300 hover:text-indigo-400 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 2. Responsive Sidebar -->
+    <div id="sidebar" class="fixed top-0 left-0 h-full z-30 bg-gray-900 text-white flex flex-col pt-16 shadow-2xl">
+        <div class="p-4 text-2xl font-extrabold text-indigo-400 absolute top-0 pt-4 left-0">
+            EduDesk
+        </div>
+
+        <!-- New Chat Button for Mobile -->
+        <div class="p-4 border-b border-gray-800 md:hidden">
+            <button id="mobile-new-chat-button" class="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus mr-2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                New Chat
+            </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto p-4 space-y-2 mt-4">
+            <p class="text-xs font-semibold uppercase text-gray-500 px-3 mb-2 tracking-wider">Assistants</p>
+            <!-- Assistant Selector Buttons are INJECTED HERE -->
+            <div id="assistant-selector" class="space-y-2">
+                <!-- Buttons injected by JS -->
+            </div>
+
+            <!-- Tools Section -->
+
+
+            <!-- Chat History Section -->
+            <div class="mt-6">
+                <p class="text-xs font-semibold uppercase text-gray-500 px-3 mb-2 tracking-wider">Chat History</p>
+                <div id="chat-history" class="chat-history max-h-60 overflow-y-auto space-y-1">
+                    <!-- Chat history items will be injected here -->
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-gray-800 text-sm text-gray-500">
+            Modern Educational AI
+        </div>
+    </div>
+
+    <!-- 3. Sidebar Overlay for Mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black opacity-0 z-20 transition-opacity duration-300 hidden" onclick="toggleSidebar()"></div>
+
+    <!-- 4. Main Content Area -->
+    <main id="main-content" class="pt-24 p-4 sm:p-8 transition-all duration-300">
+        <div id="app" class="max-w-4xl mx-auto">
+            <!-- Main Card Content - Dark Card -->
+            <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-2xl ring-1 ring-gray-700">
+                <h2 id="assistant-title" class="text-2xl font-bold mb-4 flex items-center text-gray-50">
+                    <!-- Title and icon injected here -->
+                </h2>
+                <p id="assistant-description" class="text-gray-400 mb-6 text-sm italic"></p>
+
+                <!-- Chat Container -->
+                <div id="chat-container" class="mb-6 max-h-96 overflow-y-auto p-4 bg-gray-900 rounded-xl border border-gray-700">
+                    <!-- Chat messages will be displayed here -->
+                    <div id="initial-message" class="p-4 bg-gray-700 rounded-xl text-center text-gray-400 border border-dashed border-gray-600">
+                        <p class="font-medium">Welcome to EduDesk.</p>
+                        <p class="mt-1 text-sm">Select an assistant from the sidebar and start asking a question!</p>
+                    </div>
+                </div>
+
+                <!-- File Upload Area -->
+                <div id="file-upload-area" class="mb-4 hidden">
+                    <div class="file-upload-container" id="file-drop-area">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload text-gray-400 mx-auto mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                        <p class="text-gray-400">Drag & drop files here or click to upload</p>
+                        <input type="file" id="file-input" class="hidden" multiple>
+                    </div>
+                    <div id="uploaded-files" class="mt-2"></div>
+                </div>
+
+                <!-- Query Form -->
+                <form id="query-form" class="space-y-4">
+                    <div class="flex space-x-2">
+                        <textarea id="query-input" placeholder="Ask your question here..." rows="3" class="flex-1 p-4 border border-gray-700 bg-gray-900 text-gray-100 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-none shadow-sm disabled:bg-gray-700"></textarea>
+                        <button type="button" id="file-upload-toggle" class="flex items-center justify-center w-12 h-12 bg-gray-700 text-gray-300 rounded-xl hover:bg-gray-600 transition duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-paperclip"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button type="button" id="prompt-generator-button" class="px-4 py-2 bg-gray-700 text-gray-300 font-medium rounded-lg hover:bg-gray-600 transition duration-150">
+                            Prompt Generator
+                        </button>
+                        <button type="submit" id="submit-button" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                            Ask EduDesk
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- 5. Authentication Modal -->
+    <div id="auth-modal" class="modal fixed inset-0 z-50 flex items-center justify-center opacity-0 hidden" onclick="if (event.target.id === 'auth-modal') hideAuthModal()">
+        <div class="modal-content bg-gray-800 p-8 rounded-xl shadow-2xl max-w-sm w-full border border-gray-700">
+            <h3 id="auth-title" class="text-2xl font-bold mb-6 text-gray-50 text-center">Sign In</h3>
+
+            <form id="auth-form" class="space-y-4">
+                <div class="space-y-2">
+                    <label for="auth-email" class="text-sm font-medium text-gray-400">Email Address</label>
+                    <input type="email" id="auth-email" required placeholder="name@example.com" class="w-full p-3 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                </div>
+                <div class="space-y-2">
+                    <label for="auth-password" class="text-sm font-medium text-gray-400">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full p-3 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                </div>
+
+                <p id="auth-error" class="text-red-400 text-sm hidden"></p>
+
+                <button type="submit" id="auth-submit-button" class="w-full px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 disabled:bg-indigo-400">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>
+                    <span id="auth-toggle-prompt">Don't have an account?</span>
+                    <button id="auth-toggle-button" onclick="toggleAuthMode()" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1">
+                        Sign Up
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Settings Modal -->
+    <div id="settings-modal" class="modal fixed inset-0 z-50 flex items-center justify-center opacity-0 hidden" onclick="if (event.target.id === 'settings-modal') hideSettingsModal()">
+        <div class="modal-content bg-gray-800 p-6 rounded-xl shadow-2xl max-w-md w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-50">Settings</h3>
+                <button onclick="hideSettingsModal()" class="text-gray-400 hover:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <h3>Appearance</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Dark Mode</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="dark-mode-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Compact Mode</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="compact-mode-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Chat Settings</h3>
+                <div class="space-y-3">
+                    <div>
+                        <label for="response-length" class="block text-sm font-medium text-gray-400 mb-1">Response Length</label>
+                        <select id="response-length" class="w-full p-2 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="short">Short</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="long">Long</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="temperature" class="block text-sm font-medium text-gray-400 mb-1">Creativity (Temperature)</label>
+                        <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>Precise</span>
+                            <span>Balanced</span>
+                            <span>Creative</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Data Management</h3>
+                <div class="space-y-2">
+                    <button id="export-chats" class="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition duration-150">
+                        Export Chat History
+                    </button>
+                    <button id="clear-chats" class="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition duration-150 text-red-400 hover:text-red-300">
+                        Clear All Chats
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-700">
+                <button onclick="hideSettingsModal()" class="w-full px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Prompt Generator Modal -->
+    <div id="prompt-generator-modal" class="modal fixed inset-0 z-50 flex items-center justify-center opacity-0 hidden" onclick="if (event.target.id === 'prompt-generator-modal') hidePromptGeneratorModal()">
+        <div class="modal-content bg-gray-800 p-6 rounded-xl shadow-2xl max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-50">Prompt Generator</h3>
+                <button onclick="hidePromptGeneratorModal()" class="text-gray-400 hover:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <label for="prompt-category" class="block text-sm font-medium text-gray-400 mb-2">Select Category</label>
+                <select id="prompt-category" class="w-full p-3 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="general">General Questions</option>
+                    <option value="coding">Coding Help</option>
+                    <option value="writing">Writing Assistance</option>
+                    <option value="education">Educational Content</option>
+                    <option value="creative">Creative Ideas</option>
+                    <option value="ai-suggestions">AI Suggestions</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label for="prompt-input" class="block text-sm font-medium text-gray-400 mb-2">Describe what you need help with:</label>
+                <textarea id="prompt-input" rows="3" class="w-full p-3 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 resize-none" placeholder="Describe your topic or question to get AI-suggested prompts..."></textarea>
+                <button id="generate-suggestions" class="mt-2 w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-150">
+                    Generate AI Suggestions
+                </button>
+            </div>
+
+            <div id="prompt-options" class="space-y-3 mb-6">
+                <!-- Prompt options will be injected here -->
+            </div>
+
+            <div class="mb-6">
+                <label for="custom-prompt" class="block text-sm font-medium text-gray-400 mb-2">Custom Prompt</label>
+                <textarea id="custom-prompt" rows="3" class="w-full p-3 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 resize-none" placeholder="Or write your own custom prompt..."></textarea>
+            </div>
+
+            <div class="flex space-x-3">
+                <button onclick="hidePromptGeneratorModal()" class="flex-1 px-4 py-3 bg-gray-700 text-gray-300 font-semibold rounded-lg hover:bg-gray-600 transition duration-150">
+                    Cancel
+                </button>
+                <button id="use-prompt-button" class="flex-1 px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150">
+                    Use Prompt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. PDF Viewer Modal -->
+    <div id="pdf-viewer-modal" class="modal fixed inset-0 z-50 flex items-center justify-center opacity-0 hidden" onclick="if (event.target.id === 'pdf-viewer-modal') hidePdfViewerModal()">
+        <div class="modal-content bg-gray-800 p-6 rounded-xl shadow-2xl max-w-5xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-50">PDF Viewer</h3>
+                <button onclick="hidePdfViewerModal()" class="text-gray-400 hover:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <label for="pdf-file-input" class="block text-sm font-medium text-gray-400 mb-2">Upload PDF File</label>
+                <input type="file" id="pdf-file-input" accept=".pdf" class="w-full p-2 border border-gray-700 bg-gray-900 text-gray-100 rounded-lg">
+            </div>
+
+            <div class="mb-4 flex space-x-2">
+                <button id="crop-mode-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-150">
+                    Enable Crop Mode
+                </button>
+                <button id="send-pdf-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-150">
+                    Send to Chat
+                </button>
+            </div>
+
+            <div id="pdf-container" class="pdf-container p-4">
+                <div class="text-center text-gray-400 py-8">
+                    <p>Upload a PDF file to view and crop</p>
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-between">
+                <div class="flex items-center space-x-2">
+                    <button id="prev-page" class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition duration-150">Previous</button>
+                    <span id="page-info" class="text-gray-400">Page: 0 / 0</span>
+                    <button id="next-page" class="px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition duration-150">Next</button>
+                </div>
+                <div>
+                    <button onclick="hidePdfViewerModal()" class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition duration-150">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === LOCAL AUTH GLOBALS ===
+        const USERS_KEY = 'edudesk_users';
+        const CURRENT_USER_KEY = 'edudesk_current_user';
+        const CHAT_HISTORY_KEY = 'edudesk_chat_history';
+        const SETTINGS_KEY = 'edudesk_settings';
+        let currentAuthEmail = null;
+
+        // === LLM CONFIGURATION ===
+        const API_KEY = "AIzaSyDa_hETsIslXdMQN2srsKlNmqboQmwGdOQ";
+        const TEXT_MODEL_NAME = "gemini-2.5-flash-preview-05-20";
+        const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${TEXT_MODEL_NAME}:generateContent?key=${API_KEY}`;
+
+        // === ASSISTANT DEFINITIONS ===
+        const ASSISTANTS = {
+            civil: {
+                id: 'civil',
+                name: 'Civil Engineer Helper',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trowel w-5 h-5"><path d="M11 2h8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1"/><path d="m14 6-2 2"/><path d="M4 14v6"/><path d="M8 14v6"/><path d="M12 14v6"/><path d="m2 22 2-2h16l2 2"/></svg>',
+                systemPrompt: "You are a specialized Civil Engineering assistant. Provide accurate, professional, and concise answers related to structural analysis, material science, construction management, fluid mechanics, or environmental engineering principles. Always maintain an objective and authoritative tone.",
+                placeholder: 'What are the steps for designing a simple reinforced concrete beam?',
+                isImageGenerator: false,
+            },
+            school: {
+                id: 'school',
+                name: 'School Studies Helper',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-5 h-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+                systemPrompt: "You are a helpful, encouraging School Studies assistant. Provide simplified, clear, and age-appropriate explanations for subjects like history, mathematics, literature, and science, suitable for K-12 students. Keep your tone friendly and supportive.",
+                placeholder: 'Explain the concept of photosynthesis in simple terms.',
+                isImageGenerator: false,
+            },
+            code: {
+                id: 'code',
+                name: 'Code Helper',
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code w-5 h-5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+                systemPrompt: "You are a specialized Code Helper assistant. Provide clear, well-commented, and efficient code snippets in the requested language. If no language is specified, default to Python. Explain the code's logic concisely and offer best practices. Use Markdown code blocks for all generated code.",
+                placeholder: 'Write a Python function to calculate the Nth Fibonacci number.',
+                isImageGenerator: false,
+            },
+        };
+
+        // === PROMPT GENERATOR OPTIONS ===
+        const PROMPT_CATEGORIES = {
+            general: [
+                "Explain this concept in simple terms:",
+                "What are the key points about:",
+                "Compare and contrast:",
+                "Summarize the main ideas of:",
+                "What are the pros and cons of:"
+            ],
+            coding: [
+                "Write a function to:",
+                "Debug this code:",
+                "Optimize this algorithm:",
+                "Explain how this code works:",
+                "Convert this code to another language:"
+            ],
+            writing: [
+                "Help me write an essay about:",
+                "Create an outline for:",
+                "Improve this paragraph:",
+                "Generate ideas for:",
+                "Write a professional email about:"
+            ],
+            education: [
+                "Create a study guide for:",
+                "Explain this topic step by step:",
+                "What are the real-world applications of:",
+                "Create quiz questions about:",
+                "Break down this complex concept:"
+            ],
+            creative: [
+                "Brainstorm ideas for:",
+                "Create a story about:",
+                "Design a solution for:",
+                "Imagine a world where:",
+                "Come up with creative names for:"
+            ]
+        };
+
+        // === DOM ELEMENTS ===
+        const elements = {
+            loadingContainer: document.getElementById('loading-container'),
+            sidebar: document.getElementById('sidebar'),
+            sidebarToggle: document.getElementById('sidebar-toggle'),
+            sidebarOverlay: document.getElementById('sidebar-overlay'),
+            selector: document.getElementById('assistant-selector'),
+            title: document.getElementById('assistant-title'),
+            description: document.getElementById('assistant-description'),
+            form: document.getElementById('query-form'),
+            input: document.getElementById('query-input'),
+            button: document.getElementById('submit-button'),
+            chatContainer: document.getElementById('chat-container'),
+            responseContainer: document.getElementById('response-container'),
+            body: document.body,
+            authStatusContainer: document.getElementById('auth-status-container'),
+            authModal: document.getElementById('auth-modal'),
+            authTitle: document.getElementById('auth-title'),
+            authForm: document.getElementById('auth-form'),
+            authEmail: document.getElementById('auth-email'),
+            authPassword: document.getElementById('auth-password'),
+            authSubmitButton: document.getElementById('auth-submit-button'),
+            authError: document.getElementById('auth-error'),
+            authTogglePrompt: document.getElementById('auth-toggle-prompt'),
+            authToggleButton: document.getElementById('auth-toggle-button'),
+            newChatButton: document.getElementById('new-chat-button'),
+            mobileNewChatButton: document.getElementById('mobile-new-chat-button'),
+            settingsButton: document.getElementById('settings-button'),
+            settingsModal: document.getElementById('settings-modal'),
+            fileUploadArea: document.getElementById('file-upload-area'),
+            fileDropArea: document.getElementById('file-drop-area'),
+            fileInput: document.getElementById('file-input'),
+            uploadedFiles: document.getElementById('uploaded-files'),
+            fileUploadToggle: document.getElementById('file-upload-toggle'),
+            promptGeneratorButton: document.getElementById('prompt-generator-button'),
+            promptGeneratorModal: document.getElementById('prompt-generator-modal'),
+            promptCategory: document.getElementById('prompt-category'),
+            promptInput: document.getElementById('prompt-input'),
+            generateSuggestions: document.getElementById('generate-suggestions'),
+            promptOptions: document.getElementById('prompt-options'),
+            customPrompt: document.getElementById('custom-prompt'),
+            usePromptButton: document.getElementById('use-prompt-button'),
+            chatHistory: document.getElementById('chat-history'),
+            pdfViewerButton: document.getElementById('pdf-viewer-button'),
+            pdfViewerModal: document.getElementById('pdf-viewer-modal'),
+            pdfFileInput: document.getElementById('pdf-file-input'),
+            pdfContainer: document.getElementById('pdf-container'),
+            prevPage: document.getElementById('prev-page'),
+            nextPage: document.getElementById('next-page'),
+            pageInfo: document.getElementById('page-info'),
+            cropModeBtn: document.getElementById('crop-mode-btn'),
+            sendPdfBtn: document.getElementById('send-pdf-btn')
+        };
+
+        // === STATE MANAGEMENT ===
+        let activeAssistantId = 'civil';
+        let isAuthModeLogin = true;
+        let isSidebarOpen = window.innerWidth >= 768;
+        let currentChatId = null;
+        let uploadedFiles = [];
+        let chatHistory = [];
+
+        // PDF Viewer State
+        let pdfDoc = null;
+        let currentPage = 1;
+        let isCropMode = false;
+        let cropArea = null;
+        let cropStartX = 0;
+        let cropStartY = 0;
+        let cropEndX = 0;
+        let cropEndY = 0;
+        let isCropping = false;
+
+        // === SAFE OPTIONAL CHAINING FUNCTION ===
+        function safeAccess(obj, path, defaultValue = null) {
+            return path.split('.').reduce((acc, part) => acc && acc[part] !== undefined ? acc[part] : defaultValue, obj);
+        }
+
+        // === LOCAL STORAGE FUNCTIONS ===
+
+        function getStoredUsers() {
+            const usersJson = localStorage.getItem(USERS_KEY);
+            return usersJson ? JSON.parse(usersJson) : [];
+        }
+
+        function saveStoredUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function getChatHistory() {
+            const historyJson = localStorage.getItem(CHAT_HISTORY_KEY);
+            return historyJson ? JSON.parse(historyJson) : [];
+        }
+
+        function saveChatHistory(history) {
+            localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(history));
+        }
+
+        function getSettings() {
+            const settingsJson = localStorage.getItem(SETTINGS_KEY);
+            return settingsJson ? JSON.parse(settingsJson) : {
+                darkMode: true,
+                compactMode: false,
+                responseLength: 'medium',
+                temperature: 0.7
+            };
+        }
+
+        function saveSettings(settings) {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+
+        function initializeLocalAuth() {
+            currentAuthEmail = localStorage.getItem(CURRENT_USER_KEY);
+            renderNavbarUserStatus();
+        }
+
+        function renderNavbarUserStatus() {
+            if (!elements.authStatusContainer) return;
+
+            let buttonHtml;
+            if (currentAuthEmail) {
+                const emailDisplay = currentAuthEmail.length > 20 ? currentAuthEmail.substring(0, 17) + '...' : currentAuthEmail;
+                buttonHtml = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-400 hidden sm:inline">${emailDisplay}</span>
+                        <button onclick="handleSignOut()" class="flex items-center px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out mr-1"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                            Sign Out
+                        </button>
+                    </div>
+                `;
+            } else {
+                buttonHtml = `
+                    <button onclick="showAuthModal('login')" class="flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in mr-1"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+                        Sign In
+                    </button>
+                `;
+            }
+            elements.authStatusContainer.innerHTML = buttonHtml;
+        }
+
+        function handleAuthFormSubmit(e) {
+            e.preventDefault();
+            const email = elements.authEmail.value;
+            const password = elements.authPassword.value;
+
+            elements.authSubmitButton.disabled = true;
+            elements.authError.classList.add('hidden');
+
+            try {
+                let users = getStoredUsers();
+                let errorMessage = "";
+
+                if (isAuthModeLogin) {
+                    const user = users.find(u => u.email === email && u.password === password);
+                    if (user) {
+                        localStorage.setItem(CURRENT_USER_KEY, email);
+                        currentAuthEmail = email;
+                    } else {
+                        errorMessage = "Login failed: Invalid email or password.";
+                    }
+                } else {
+                    const existingUser = users.find(u => u.email === email);
+                    if (existingUser) {
+                        errorMessage = "Sign up failed: This email is already registered. Try signing in.";
+                    } else if (password.length < 6) {
+                        errorMessage = "Sign up failed: Password must be at least 6 characters.";
+                    } else {
+                        users.push({
+                            email,
+                            password
+                        });
+                        saveStoredUsers(users);
+                        localStorage.setItem(CURRENT_USER_KEY, email);
+                        currentAuthEmail = email;
+                    }
+                }
+
+                if (errorMessage) {
+                    elements.authError.textContent = errorMessage;
+                    elements.authError.classList.remove('hidden');
+                } else {
+                    hideAuthModal();
+                    renderNavbarUserStatus();
+                }
+
+            } catch (error) {
+                elements.authError.textContent = "An error occurred during authentication.";
+                elements.authError.classList.remove('hidden');
+            } finally {
+                elements.authSubmitButton.disabled = false;
+            }
+        }
+
+        function handleSignOut() {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            currentAuthEmail = null;
+            renderNavbarUserStatus();
+        }
+
+        function showAuthModal(mode) {
+            isAuthModeLogin = mode === 'login';
+            toggleAuthMode(false);
+
+            elements.authModal.classList.remove('hidden');
+            setTimeout(() => elements.authModal.classList.remove('opacity-0'), 10);
+            elements.authEmail.value = '';
+            elements.authPassword.value = '';
+            elements.authError.classList.add('hidden');
+        }
+
+        function hideAuthModal() {
+            elements.authModal.classList.add('opacity-0');
+            setTimeout(() => elements.authModal.classList.add('hidden'), 300);
+        }
+
+        function toggleAuthMode(toggle = true) {
+            if (toggle) {
+                isAuthModeLogin = !isAuthModeLogin;
+            }
+
+            elements.authTitle.textContent = isAuthModeLogin ? "Sign In" : "Create Account";
+            elements.authSubmitButton.textContent = isAuthModeLogin ? "Sign In" : "Sign Up";
+            elements.authTogglePrompt.textContent = isAuthModeLogin ? "Don't have an account?" : "Already have an account?";
+            elements.authToggleButton.textContent = isAuthModeLogin ? "Sign Up" : "Sign In";
+        }
+
+        // === CHAT HISTORY FUNCTIONS ===
+
+        function loadChatHistory() {
+            chatHistory = getChatHistory();
+            renderChatHistory();
+        }
+
+        function renderChatHistory() {
+            if (!elements.chatHistory) return;
+
+            if (chatHistory.length === 0) {
+                elements.chatHistory.innerHTML = '<p class="text-gray-500 text-sm px-3">No chat history yet</p>';
+                return;
+            }
+
+            elements.chatHistory.innerHTML = chatHistory.slice(-10).reverse().map(chat => `
+                <button onclick="loadChat('${chat.id}')" class="w-full text-left px-3 py-2 text-sm rounded-lg transition duration-200 ${currentChatId === chat.id ? 'bg-indigo-700 text-white' : 'text-gray-300 hover:bg-gray-800'}">
+                    <div class="truncate">${chat.title || 'Untitled Chat'}</div>
+                    <div class="text-xs text-gray-500 mt-1">${formatDate(chat.timestamp)}</div>
+                </button>
+            `).join('');
+        }
+
+        function createNewChat() {
+            currentChatId = 'chat_' + Date.now();
+            const newChat = {
+                id: currentChatId,
+                title: 'New Chat',
+                timestamp: new Date().toISOString(),
+                messages: [],
+                assistant: activeAssistantId
+            };
+
+            chatHistory.push(newChat);
+            saveChatHistory(chatHistory);
+            renderChatHistory();
+            clearChatContainer();
+        }
+
+        function loadChat(chatId) {
+            const chat = chatHistory.find(c => c.id === chatId);
+            if (!chat) return;
+
+            currentChatId = chatId;
+            activeAssistantId = chat.assistant || 'civil';
+            handleAssistantSwitch(activeAssistantId, false);
+            renderChatHistory();
+            renderChatMessages(chat.messages);
+        }
+
+        function saveMessageToChat(message, isUser, files = []) {
+            if (!currentChatId) {
+                createNewChat();
+            }
+
+            const chat = chatHistory.find(c => c.id === currentChatId);
+            if (!chat) return;
+
+            chat.messages.push({
+                content: message,
+                isUser: isUser,
+                timestamp: new Date().toISOString(),
+                files: files
+            });
+
+            // Update chat title if it's the first user message
+            if (isUser && chat.messages.length === 1) {
+                chat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+            }
+
+            saveChatHistory(chatHistory);
+            renderChatHistory();
+        }
+
+        function renderChatMessages(messages) {
+            if (!elements.chatContainer) return;
+
+            if (messages.length === 0) {
+                elements.chatContainer.innerHTML = `
+                    <div id="initial-message" class="p-4 bg-gray-700 rounded-xl text-center text-gray-400 border border-dashed border-gray-600">
+                        <p class="font-medium">Welcome to EduDesk.</p>
+                        <p class="mt-1 text-sm">Select an assistant from the sidebar and start asking a question!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.chatContainer.innerHTML = messages.map(msg => {
+                let fileHtml = '';
+                if (msg.files && msg.files.length > 0) {
+                    fileHtml = msg.files.map(file => `
+                        <div class="mt-2 p-2 bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                                <span class="text-sm">${file.name}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                return `
+                    <div class="message ${msg.isUser ? 'user-message' : 'assistant-message'}">
+                        <div class="prose max-w-none text-gray-200">
+                            ${simpleMarkdown(msg.content)}
+                            ${fileHtml}
+                        </div>
+                        <div class="message-time">${formatTime(msg.timestamp)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Scroll to bottom
+            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+        }
+
+        function clearChatContainer() {
+            if (elements.chatContainer) {
+                elements.chatContainer.innerHTML = `
+                    <div id="initial-message" class="p-4 bg-gray-700 rounded-xl text-center text-gray-400 border border-dashed border-gray-600">
+                        <p class="font-medium">Welcome to EduDesk.</p>
+                        <p class="mt-1 text-sm">Select an assistant from the sidebar and start asking a question!</p>
+                    </div>
+                `;
+            }
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString();
+        }
+
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // === FILE UPLOAD FUNCTIONS ===
+
+        function toggleFileUpload() {
+            if (elements.fileUploadArea.classList.contains('hidden')) {
+                elements.fileUploadArea.classList.remove('hidden');
+            } else {
+                elements.fileUploadArea.classList.add('hidden');
+                clearUploadedFiles();
+            }
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                // Store file object with additional metadata
+                const fileObj = {
+                    file: file,
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    lastModified: file.lastModified
+                };
+
+                uploadedFiles.push(fileObj);
+
+                const fileElement = document.createElement('div');
+                fileElement.className = 'uploaded-file';
+                fileElement.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                    <span class="flex-1 truncate">${file.name}</span>
+                    <button onclick="removeFile(${uploadedFiles.length - 1})" class="text-gray-400 hover:text-red-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                `;
+
+                elements.uploadedFiles.appendChild(fileElement);
+            }
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderUploadedFiles();
+        }
+
+        function renderUploadedFiles() {
+            elements.uploadedFiles.innerHTML = '';
+            uploadedFiles.forEach((fileObj, index) => {
+                const fileElement = document.createElement('div');
+                fileElement.className = 'uploaded-file';
+                fileElement.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                    <span class="flex-1 truncate">${fileObj.name}</span>
+                    <button onclick="removeFile(${index})" class="text-gray-400 hover:text-red-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                `;
+
+                elements.uploadedFiles.appendChild(fileElement);
+            });
+        }
+
+        function clearUploadedFiles() {
+            uploadedFiles = [];
+            elements.uploadedFiles.innerHTML = '';
+            elements.fileInput.value = '';
+        }
+
+        function setupFileUpload() {
+            if (!elements.fileDropArea || !elements.fileInput) return;
+
+            // Click to upload
+            elements.fileDropArea.addEventListener('click', () => {
+                elements.fileInput.click();
+            });
+
+            // Drag and drop
+            elements.fileDropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                elements.fileDropArea.classList.add('dragover');
+            });
+
+            elements.fileDropArea.addEventListener('dragleave', () => {
+                elements.fileDropArea.classList.remove('dragover');
+            });
+
+            elements.fileDropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                elements.fileDropArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+
+            // File input change
+            elements.fileInput.addEventListener('change', handleFileSelect);
+        }
+
+        // === SETTINGS FUNCTIONS ===
+
+        function showSettingsModal() {
+            const settings = getSettings();
+
+            // Set current settings values
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const compactModeToggle = document.getElementById('compact-mode-toggle');
+            const responseLength = document.getElementById('response-length');
+            const temperature = document.getElementById('temperature');
+
+            if (darkModeToggle) darkModeToggle.checked = settings.darkMode;
+            if (compactModeToggle) compactModeToggle.checked = settings.compactMode;
+            if (responseLength) responseLength.value = settings.responseLength;
+            if (temperature) temperature.value = settings.temperature;
+
+            elements.settingsModal.classList.remove('hidden');
+            setTimeout(() => elements.settingsModal.classList.remove('opacity-0'), 10);
+        }
+
+        function hideSettingsModal() {
+            elements.settingsModal.classList.add('opacity-0');
+            setTimeout(() => elements.settingsModal.classList.add('hidden'), 300);
+        }
+
+        function saveSettings() {
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const compactModeToggle = document.getElementById('compact-mode-toggle');
+            const responseLength = document.getElementById('response-length');
+            const temperature = document.getElementById('temperature');
+
+            const settings = {
+                darkMode: darkModeToggle ? darkModeToggle.checked : true,
+                compactMode: compactModeToggle ? compactModeToggle.checked : false,
+                responseLength: responseLength ? responseLength.value : 'medium',
+                temperature: temperature ? parseFloat(temperature.value) : 0.7
+            };
+
+            saveSettings(settings);
+            hideSettingsModal();
+
+            // Apply settings
+            applySettings(settings);
+        }
+
+        function applySettings(settings) {
+            if (settings.darkMode) {
+                document.body.classList.add('bg-gray-900', 'text-gray-100');
+            } else {
+                document.body.classList.remove('bg-gray-900', 'text-gray-100');
+            }
+
+            if (settings.compactMode) {
+                document.body.classList.add('compact-mode');
+            } else {
+                document.body.classList.remove('compact-mode');
+            }
+        }
+
+        // === PROMPT GENERATOR FUNCTIONS ===
+
+        function showPromptGeneratorModal() {
+            elements.promptGeneratorModal.classList.remove('hidden');
+            setTimeout(() => elements.promptGeneratorModal.classList.remove('opacity-0'), 10);
+            renderPromptOptions();
+        }
+
+        function hidePromptGeneratorModal() {
+            elements.promptGeneratorModal.classList.add('opacity-0');
+            setTimeout(() => elements.promptGeneratorModal.classList.add('hidden'), 300);
+        }
+
+        function renderPromptOptions() {
+            if (!elements.promptOptions || !elements.promptCategory) return;
+
+            const category = elements.promptCategory.value;
+
+            if (category === 'ai-suggestions') {
+                elements.promptOptions.innerHTML = `
+                    <div class="text-center text-gray-400 py-4">
+                        <p>Describe what you need help with and click "Generate AI Suggestions"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const prompts = PROMPT_CATEGORIES[category] || [];
+
+            elements.promptOptions.innerHTML = prompts.map(prompt => `
+                <div class="prompt-option" onclick="selectPrompt('${prompt.replace(/'/g, "\\'")}')">
+                    ${prompt}
+                </div>
+            `).join('');
+        }
+
+        async function generateAISuggestions() {
+            if (!elements.promptInput || !elements.generateSuggestions) return;
+
+            const userInput = elements.promptInput.value.trim();
+            if (!userInput) {
+                alert('Please describe what you need help with first.');
+                return;
+            }
+
+            // Show loading state
+            elements.generateSuggestions.disabled = true;
+            elements.generateSuggestions.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Generating...
+            `;
+
+            try {
+                const prompt = `Based on the user's description: "${userInput}", generate 5-7 specific, helpful prompt suggestions that would work well with an AI assistant. Make them diverse and practical. Format each suggestion as a complete sentence that starts with an action verb. Return only the suggestions as a bulleted list.`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    systemInstruction: {
+                        parts: [{
+                            text: "You are a helpful assistant that generates effective AI prompts."
+                        }]
+                    },
+                };
+
+                const fetchOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload),
+                };
+
+                const apiResponse = await fetch(TEXT_API_URL, fetchOptions);
+
+                if (!apiResponse.ok) {
+                    throw new Error(`API failed (${apiResponse.status})`);
+                }
+
+                const result = await apiResponse.json();
+                const candidate = safeAccess(result, 'candidates.0');
+
+                if (candidate && safeAccess(candidate, 'content.parts.0.text')) {
+                    const responseText = candidate.content.parts[0].text;
+
+                    // Parse the bulleted list and create prompt options
+                    const suggestions = responseText.split('\n')
+                        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('*'))
+                        .map(line => line.replace(/^[-*]\s*/, '').trim())
+                        .filter(line => line.length > 0);
+
+                    if (suggestions.length > 0) {
+                        elements.promptOptions.innerHTML = suggestions.map(suggestion => `
+                            <div class="prompt-option ai-suggestion" onclick="selectPrompt('${suggestion.replace(/'/g, "\\'")}')">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles mr-2"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                                    ${suggestion}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        elements.promptOptions.innerHTML = `
+                            <div class="text-center text-gray-400 py-4">
+                                <p>No suggestions generated. Try being more specific in your description.</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    throw new Error("No suggestions generated");
+                }
+
+            } catch (error) {
+                console.error('Error generating AI suggestions:', error);
+                elements.promptOptions.innerHTML = `
+                    <div class="text-center text-red-400 py-4">
+                        <p>Failed to generate AI suggestions. Please try again.</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button
+                elements.generateSuggestions.disabled = false;
+                elements.generateSuggestions.textContent = 'Generate AI Suggestions';
+            }
+        }
+
+        function selectPrompt(prompt) {
+            if (elements.customPrompt) {
+                elements.customPrompt.value = prompt;
+            }
+        }
+
+        function usePrompt() {
+            if (!elements.customPrompt || !elements.input) return;
+
+            const prompt = elements.customPrompt.value.trim();
+            if (prompt) {
+                elements.input.value = prompt;
+                hidePromptGeneratorModal();
+                elements.input.focus();
+            }
+        }
+
+        // === PDF VIEWER FUNCTIONS ===
+
+        function showPdfViewerModal() {
+            elements.pdfViewerModal.classList.remove('hidden');
+            setTimeout(() => elements.pdfViewerModal.classList.remove('opacity-0'), 10);
+            clearPdfViewer();
+        }
+
+        function hidePdfViewerModal() {
+            elements.pdfViewerModal.classList.add('opacity-0');
+            setTimeout(() => elements.pdfViewerModal.classList.add('hidden'), 300);
+        }
+
+        function clearPdfViewer() {
+            elements.pdfContainer.innerHTML = '<div class="text-center text-gray-400 py-8"><p>Upload a PDF file to view and crop</p></div>';
+            pdfDoc = null;
+            currentPage = 1;
+            updatePageInfo();
+        }
+
+        function updatePageInfo() {
+            if (pdfDoc) {
+                elements.pageInfo.textContent = `Page: ${currentPage} / ${pdfDoc.numPages}`;
+            } else {
+                elements.pageInfo.textContent = 'Page: 0 / 0';
+            }
+        }
+
+        async function loadPdf(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument({
+                    data: arrayBuffer
+                }).promise;
+                currentPage = 1;
+                updatePageInfo();
+                renderPage(currentPage);
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                alert('Error loading PDF file. Please make sure it is a valid PDF.');
+            }
+        }
+
+        async function renderPage(pageNum) {
+            if (!pdfDoc) return;
+
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({
+                scale: 1.5
+            });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            canvas.className = 'pdf-page';
+
+            // Add crop functionality if in crop mode
+            if (isCropMode) {
+                canvas.style.cursor = 'crosshair';
+                canvas.addEventListener('mousedown', startCrop);
+                canvas.addEventListener('mousemove', updateCrop);
+                canvas.addEventListener('mouseup', endCrop);
+            }
+
+            const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+
+            await page.render(renderContext).promise;
+
+            elements.pdfContainer.innerHTML = '';
+            elements.pdfContainer.appendChild(canvas);
+        }
+
+        function startCrop(e) {
+            if (!isCropMode) return;
+
+            isCropping = true;
+            const rect = e.target.getBoundingClientRect();
+            cropStartX = e.clientX - rect.left;
+            cropStartY = e.clientY - rect.top;
+
+            // Create crop area element
+            cropArea = document.createElement('div');
+            cropArea.className = 'crop-area';
+            cropArea.style.left = cropStartX + 'px';
+            cropArea.style.top = cropStartY + 'px';
+            cropArea.style.width = '0px';
+            cropArea.style.height = '0px';
+
+            e.target.parentNode.appendChild(cropArea);
+        }
+
+        function updateCrop(e) {
+            if (!isCropping || !cropArea) return;
+
+            const rect = e.target.getBoundingClientRect();
+            cropEndX = e.clientX - rect.left;
+            cropEndY = e.clientY - rect.top;
+
+            const width = cropEndX - cropStartX;
+            const height = cropEndY - cropStartY;
+
+            cropArea.style.width = Math.abs(width) + 'px';
+            cropArea.style.height = Math.abs(height) + 'px';
+
+            if (width < 0) {
+                cropArea.style.left = cropEndX + 'px';
+            }
+            if (height < 0) {
+                cropArea.style.top = cropEndY + 'px';
+            }
+        }
+
+        function endCrop(e) {
+            if (!isCropping) return;
+
+            isCropping = false;
+
+            // Add crop controls
+            const controls = document.createElement('div');
+            controls.className = 'crop-controls';
+            controls.innerHTML = `
+                <button class="crop-btn cancel" onclick="cancelCrop()">Cancel</button>
+                <button class="crop-btn" onclick="applyCrop()">Apply Crop</button>
+            `;
+
+            cropArea.appendChild(controls);
+        }
+
+        function cancelCrop() {
+            if (cropArea) {
+                cropArea.remove();
+                cropArea = null;
+            }
+        }
+
+        function applyCrop() {
+            if (!cropArea) return;
+
+            // In a real implementation, you would capture the cropped area
+            // and either extract it as an image or save the coordinates
+            alert('Crop applied! In a full implementation, this would extract the selected area.');
+
+            if (cropArea) {
+                cropArea.remove();
+                cropArea = null;
+            }
+        }
+
+        function toggleCropMode() {
+            isCropMode = !isCropMode;
+
+            if (isCropMode) {
+                elements.cropModeBtn.textContent = 'Disable Crop Mode';
+                elements.cropModeBtn.classList.remove('bg-indigo-600');
+                elements.cropModeBtn.classList.add('bg-red-600');
+
+                // Re-render current page with crop functionality
+                if (pdfDoc) {
+                    renderPage(currentPage);
+                }
+            } else {
+                elements.cropModeBtn.textContent = 'Enable Crop Mode';
+                elements.cropModeBtn.classList.remove('bg-red-600');
+                elements.cropModeBtn.classList.add('bg-indigo-600');
+
+                // Re-render current page without crop functionality
+                if (pdfDoc) {
+                    renderPage(currentPage);
+                }
+            }
+        }
+
+        function sendPdfToChat() {
+            if (!pdfDoc) {
+                alert('Please load a PDF first.');
+                return;
+            }
+
+            // Add PDF to uploaded files
+            const pdfFile = elements.pdfFileInput.files[0];
+            if (pdfFile) {
+                const fileObj = {
+                    file: pdfFile,
+                    name: pdfFile.name,
+                    type: pdfFile.type,
+                    size: pdfFile.size,
+                    lastModified: pdfFile.lastModified
+                };
+
+                uploadedFiles.push(fileObj);
+                renderUploadedFiles();
+                hidePdfViewerModal();
+
+                // Show file upload area if hidden
+                if (elements.fileUploadArea.classList.contains('hidden')) {
+                    elements.fileUploadArea.classList.remove('hidden');
+                }
+            } else {
+                alert('No PDF file selected.');
+            }
+        }
+
+        // === SIDEBAR LOGIC ===
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            const isDesktop = window.innerWidth >= 768;
+
+            if (isDesktop) {
+                if (!isSidebarOpen) {
+                    elements.body.classList.add('sidebar-closed-desktop');
+                } else {
+                    elements.body.classList.remove('sidebar-closed-desktop');
+                }
+            } else {
+                if (isSidebarOpen) {
+                    elements.sidebar.classList.add('is-open');
+                    elements.sidebarOverlay.classList.remove('hidden');
+                    setTimeout(() => elements.sidebarOverlay.classList.remove('opacity-0'), 10);
+                } else {
+                    elements.sidebar.classList.remove('is-open');
+                    elements.sidebarOverlay.classList.add('opacity-0');
+                    setTimeout(() => elements.sidebarOverlay.classList.add('hidden'), 300);
+                }
+            }
+        }
+
+        function handleResize() {
+            const isDesktop = window.innerWidth >= 768;
+
+            if (isDesktop) {
+                if (!elements.body.classList.contains('sidebar-closed-desktop')) {
+                    isSidebarOpen = true;
+                }
+                elements.sidebar.classList.remove('is-open');
+                elements.sidebarOverlay.classList.add('hidden');
+            } else {
+                elements.body.classList.remove('sidebar-closed-desktop');
+                isSidebarOpen = false;
+                elements.sidebar.classList.remove('is-open');
+                elements.sidebarOverlay.classList.add('hidden');
+                elements.sidebarOverlay.classList.add('opacity-0');
+            }
+        }
+
+        // === UTILITY FUNCTIONS ===
+
+        function simpleMarkdown(text) {
+            if (!text) return '';
+
+            let html = text;
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/^> (.*)$/gm, '<p class="pl-4 border-l-4 border-indigo-500 bg-gray-900 p-2 my-2 italic">$1</p>');
+
+            const lines = html.split('\n');
+            let inList = false;
+            let listHtml = '';
+
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
+                    if (!inList) {
+                        listHtml += '<ul class="list-disc ml-6">';
+                        inList = true;
+                    }
+                    listHtml += `<li>${trimmedLine.substring(2).trim()}</li>`;
+                } else {
+                    if (inList) {
+                        listHtml += '</ul>';
+                        inList = false;
+                    }
+                    listHtml += `<p>${line.trim().replace(/\n/g, '<br>')}</p>`;
+                }
+            }
+
+            if (inList) {
+                listHtml += '</ul>';
+            }
+
+            listHtml = listHtml.replace(/<p><\/p>/g, '').replace(/<p><br><\/p>/g, '');
+            return listHtml;
+        }
+
+        // === MAIN LOGIC ===
+
+        async function handleQuerySubmit(e) {
+            e.preventDefault();
+            const query = elements.input.value.trim();
+            const assistant = ASSISTANTS[activeAssistantId];
+
+            if (!query && uploadedFiles.length === 0) return;
+
+            elements.button.disabled = true;
+            elements.input.disabled = true;
+
+            // Save user message to chat with files
+            saveMessageToChat(query, true, uploadedFiles);
+
+            // Display user message in chat
+            let fileHtml = '';
+            if (uploadedFiles.length > 0) {
+                fileHtml = uploadedFiles.map(fileObj => `
+                    <div class="mt-2 p-2 bg-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                            <span class="text-sm">${fileObj.name}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const userMessageHtml = `
+                <div class="message user-message">
+                    <div class="prose max-w-none text-gray-200">
+                        ${simpleMarkdown(query)}
+                        ${fileHtml}
+                    </div>
+                    <div class="message-time">${formatTime(new Date().toISOString())}</div>
+                </div>
+            `;
+
+            if (document.getElementById('initial-message')) {
+                elements.chatContainer.innerHTML = userMessageHtml;
+            } else {
+                elements.chatContainer.innerHTML += userMessageHtml;
+            }
+
+            // Add loading indicator for assistant response with a unique ID
+            const loadingId = 'loading-' + Date.now();
+            const loadingHtml = `
+                <div id="${loadingId}" class="message assistant-message">
+                    <div class="flex items-center">
+                        <svg class="animate-spin h-5 w-5 text-indigo-300 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-gray-300">EduDesk is thinking...</span>
+                    </div>
+                </div>
+            `;
+            elements.chatContainer.innerHTML += loadingHtml;
+            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+
+            let responseText = '';
+            let sources = [];
+            let finalError = null;
+            const maxRetries = 3;
+
+            // Text generation logic
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    // Prepare the content parts - include file information if files are uploaded
+                    let parts = [{
+                        text: query
+                    }];
+
+                    // Add file information to the prompt
+                    if (uploadedFiles.length > 0) {
+                        const fileList = uploadedFiles.map(f => f.name).join(', ');
+                        parts.push({
+                            text: `The user has uploaded the following files: ${fileList}. Please consider these files in your response.`
+                        });
+                    }
+
+                    const payload = {
+                        contents: [{
+                            parts: parts
+                        }],
+                        tools: [{
+                            "google_search": {}
+                        }],
+                        systemInstruction: {
+                            parts: [{
+                                text: assistant.systemPrompt
+                            }]
+                        },
+                    };
+
+                    const fetchOptions = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload),
+                    };
+
+                    const apiResponse = await fetch(TEXT_API_URL, fetchOptions);
+
+                    if (!apiResponse.ok) {
+                        const errorData = await apiResponse.json().catch(() => ({}));
+                        throw new Error(`API failed (${apiResponse.status}): ${safeAccess(errorData, 'error.message', 'Unknown error')}`);
+                    }
+
+                    const result = await apiResponse.json();
+                    const candidate = safeAccess(result, 'candidates.0');
+
+                    if (candidate && safeAccess(candidate, 'content.parts.0.text')) {
+                        responseText = candidate.content.parts[0].text;
+
+                        const groundingMetadata = safeAccess(candidate, 'groundingMetadata');
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: safeAccess(attribution, 'web.uri'),
+                                    title: safeAccess(attribution, 'web.title'),
+                                }))
+                                .filter(source => source.uri && source.title);
+                        }
+                        break;
+                    } else {
+                        throw new Error("Received an empty or malformed response from the model.");
+                    }
+
+                } catch (err) {
+                    finalError = `Failed to get response: ${err.message || err}`;
+
+                    if (attempt < maxRetries) {
+                        const delay = Math.pow(2, attempt) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+
+            elements.button.disabled = false;
+            elements.input.disabled = false;
+            elements.input.value = '';
+
+            // Clear uploaded files after sending
+            clearUploadedFiles();
+            if (!elements.fileUploadArea.classList.contains('hidden')) {
+                elements.fileUploadArea.classList.add('hidden');
+            }
+
+            // Remove loading indicator using the unique ID
+            const loadingElement = document.getElementById(loadingId);
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+
+            if (finalError) {
+                // Display error message
+                const errorHtml = `
+                    <div class="message assistant-message">
+                        <div class="p-4 bg-red-900 border border-red-700 text-red-300 rounded-xl">
+                            <p class="font-semibold">Error:</p>
+                            <p class="whitespace-pre-wrap">${finalError}</p>
+                        </div>
+                        <div class="message-time">${formatTime(new Date().toISOString())}</div>
+                    </div>
+                `;
+                elements.chatContainer.innerHTML += errorHtml;
+            } else {
+                // Display assistant response
+                let sourceList = '';
+                if (sources && sources.length > 0) {
+                    sourceList = `
+                        <div class="mt-4 pt-4 border-t border-indigo-700">
+                            <h4 class="text-sm font-medium text-gray-400 mb-2">Sources (Google Search Grounding):</h4>
+                            <ul class="space-y-1 text-xs text-gray-400 list-disc pl-5">
+                                ${sources.map(s => `
+                                    <li>
+                                        <a href="${s.uri}" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline transition duration-150">
+                                            ${s.title || s.uri}
+                                        </a>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                const formattedContent = simpleMarkdown(responseText);
+                
+                const assistantMessageHtml = `
+                    <div class="message assistant-message">
+                        <div class="prose max-w-none text-gray-200">
+                            ${formattedContent}
+                            ${sourceList}
+                        </div>
+                        <div class="message-time">${formatTime(new Date().toISOString())}</div>
+                    </div>
+                `;
+                elements.chatContainer.innerHTML += assistantMessageHtml;
+                
+                // Save assistant message to chat
+                saveMessageToChat(responseText, false);
+            }
+
+            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+        }
+
+        function renderAssistantSelector() {
+            if (!elements.selector) return;
+            
+            elements.selector.innerHTML = Object.values(ASSISTANTS).map(assistant => `
+                <button
+                    data-assistant-id="${assistant.id}"
+                    onclick="handleAssistantSwitch('${assistant.id}')"
+                    class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition duration-200 ease-in-out ${
+                        activeAssistantId === assistant.id
+                            ? 'bg-indigo-700 text-white shadow-inner' 
+                            : 'text-gray-300 hover:bg-gray-800 hover:text-indigo-400' 
+                    }"
+                >
+                    ${assistant.icon}
+                    <span class="ml-3">${assistant.name}</span>
+                </button>
+            `).join('');
+        }
+
+        function handleAssistantSwitch(id, createNew = true) {
+            const isSwitching = activeAssistantId !== id;
+            
+            activeAssistantId = id;
+            const assistant = ASSISTANTS[activeAssistantId];
+
+            renderAssistantSelector(); 
+            if (elements.title) {
+                elements.title.innerHTML = `${assistant.icon}<span class="ml-2">${assistant.name.replace('Helper', 'Assistant')}</span>`;
+            }
+            if (elements.description) {
+                elements.description.textContent = assistant.systemPrompt.split('. ')[0] + '.'; 
+            }
+            if (elements.input) {
+                elements.input.placeholder = `Ask your question here, e.g., ${assistant.placeholder}`;
+            }
+            
+            if (isSwitching && createNew) {
+                createNewChat();
+            }
+            
+            if (window.innerWidth < 768 && isSwitching) {
+                if (isSidebarOpen) {
+                    toggleSidebar(); 
+                }
+            }
+        }
+
+        // === INITIALIZATION ===
+        function initializeApp() {
+            // Hide loading animation after 1.5 seconds
+            setTimeout(() => {
+                if (elements.loadingContainer) {
+                    elements.loadingContainer.classList.add('hidden');
+                }
+            }, 1500);
+
+            // Initialize local storage auth
+            initializeLocalAuth();
+            
+            // Load chat history
+            loadChatHistory();
+            
+            // Load settings
+            const settings = getSettings();
+            applySettings(settings);
+
+            // Set up event listeners
+            if (elements.sidebarToggle) {
+                elements.sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            window.addEventListener('resize', handleResize);
+            
+            if (elements.form) {
+                elements.form.addEventListener('submit', handleQuerySubmit);
+            }
+            
+            if (elements.authForm) {
+                elements.authForm.addEventListener('submit', handleAuthFormSubmit);
+            }
+            
+            if (elements.newChatButton) {
+                elements.newChatButton.addEventListener('click', createNewChat);
+            }
+            
+            if (elements.mobileNewChatButton) {
+                elements.mobileNewChatButton.addEventListener('click', createNewChat);
+            }
+            
+            if (elements.settingsButton) {
+                elements.settingsButton.addEventListener('click', showSettingsModal);
+            }
+            
+            if (elements.fileUploadToggle) {
+                elements.fileUploadToggle.addEventListener('click', toggleFileUpload);
+            }
+            
+            if (elements.promptGeneratorButton) {
+                elements.promptGeneratorButton.addEventListener('click', showPromptGeneratorModal);
+            }
+            
+            if (elements.promptCategory) {
+                elements.promptCategory.addEventListener('change', renderPromptOptions);
+            }
+            
+            if (elements.generateSuggestions) {
+                elements.generateSuggestions.addEventListener('click', generateAISuggestions);
+            }
+            
+            if (elements.usePromptButton) {
+                elements.usePromptButton.addEventListener('click', usePrompt);
+            }
+            
+            // PDF Viewer event listeners
+            if (elements.pdfViewerButton) {
+                elements.pdfViewerButton.addEventListener('click', showPdfViewerModal);
+            }
+            
+            if (elements.pdfFileInput) {
+                elements.pdfFileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        loadPdf(e.target.files[0]);
+                    }
+                });
+            }
+            
+            if (elements.prevPage) {
+                elements.prevPage.addEventListener('click', () => {
+                    if (pdfDoc && currentPage > 1) {
+                        currentPage--;
+                        renderPage(currentPage);
+                        updatePageInfo();
+                    }
+                });
+            }
+            
+            if (elements.nextPage) {
+                elements.nextPage.addEventListener('click', () => {
+                    if (pdfDoc && currentPage < pdfDoc.numPages) {
+                        currentPage++;
+                        renderPage(currentPage);
+                        updatePageInfo();
+                    }
+                });
+            }
+            
+            if (elements.cropModeBtn) {
+                elements.cropModeBtn.addEventListener('click', toggleCropMode);
+            }
+            
+            if (elements.sendPdfBtn) {
+                elements.sendPdfBtn.addEventListener('click', sendPdfToChat);
+            }
+            
+            // Set up file upload
+            setupFileUpload();
+            
+            // Set up settings modal buttons
+            const exportChatsBtn = document.getElementById('export-chats');
+            const clearChatsBtn = document.getElementById('clear-chats');
+            const saveSettingsBtn = document.querySelector('#settings-modal button:last-child');
+            
+            if (exportChatsBtn) {
+                exportChatsBtn.addEventListener('click', exportChats);
+            }
+            
+            if (clearChatsBtn) {
+                clearChatsBtn.addEventListener('click', clearAllChats);
+            }
+            
+            if (saveSettingsBtn) {
+                saveSettingsBtn.addEventListener('click', saveSettings);
+            }
+            
+            if (window.innerWidth < 768) {
+                isSidebarOpen = false;
+                elements.body.classList.remove('sidebar-closed-desktop');
+                if (elements.sidebar) {
+                    elements.sidebar.classList.remove('is-open'); 
+                }
+            } else {
+                isSidebarOpen = true;
+                elements.body.classList.remove('sidebar-closed-desktop');
+            }
+            
+            handleAssistantSwitch(activeAssistantId); 
+            handleResize();
+        }
+
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Expose functions globally for HTML access
+        window.toggleSidebar = toggleSidebar;
+        window.showAuthModal = showAuthModal;
+        window.hideAuthModal = hideAuthModal;
+        window.toggleAuthMode = toggleAuthMode;
+        window.handleSignOut = handleSignOut;
+        window.handleAssistantSwitch = handleAssistantSwitch;
+        window.removeFile = removeFile;
+        window.hideSettingsModal = hideSettingsModal;
+        window.hidePromptGeneratorModal = hidePromptGeneratorModal;
+        window.selectPrompt = selectPrompt;
+        window.loadChat = loadChat;
+        window.generateAISuggestions = generateAISuggestions;
+        window.showPdfViewerModal = showPdfViewerModal;
+        window.hidePdfViewerModal = hidePdfViewerModal;
+        window.toggleCropMode = toggleCropMode;
+        window.cancelCrop = cancelCrop;
+        window.applyCrop = applyCrop;
+
+        // Additional functions for settings
+        function exportChats() {
+            const chatHistory = getChatHistory();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(chatHistory, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "edudesk_chat_history.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function clearAllChats() {
+            if (confirm("Are you sure you want to clear all chat history? This action cannot be undone.")) {
+                localStorage.removeItem(CHAT_HISTORY_KEY);
+                chatHistory = [];
+                renderChatHistory();
+                clearChatContainer();
+                currentChatId = null;
+            }
+        }
+    </script>
+</body>
+
+</html>
