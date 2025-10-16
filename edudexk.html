@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduDesk AI - The solution of answers</title>
-    <link rel="icon" href=""C:\Users\samdd\Downloads\resized_icon_256px.png""/>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide Icons for professional look -->
@@ -224,6 +223,14 @@
             border-radius: 0.5rem;
             margin-top: 0.5rem;
         }
+        
+        .file-status-ready {
+            border: 1px solid #10b981;
+        }
+        
+        .file-status-error {
+            border: 1px solid #ef4444;
+        }
         /* Settings styling */
         
         .settings-section {
@@ -393,7 +400,6 @@
             </div>
 
             <!-- Tools Section -->
-
 
             <!-- Chat History Section -->
             <div class="mt-6">
@@ -1136,7 +1142,9 @@
                     name: file.name,
                     type: file.type,
                     size: file.size,
-                    lastModified: file.lastModified
+                    lastModified: file.lastModified,
+                    content: null, // Will store file content
+                    isLoaded: false
                 };
 
                 uploadedFiles.push(fileObj);
@@ -1146,12 +1154,135 @@
                 fileElement.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
                     <span class="flex-1 truncate">${file.name}</span>
-                    <button onclick="removeFile(${uploadedFiles.length - 1})" class="text-gray-400 hover:text-red-400">
+                    <div class="loading-spinner">
+                        <svg class="animate-spin h-4 w-4 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <button onclick="removeFile(${uploadedFiles.length - 1})" class="text-gray-400 hover:text-red-400 ml-2" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 `;
 
                 elements.uploadedFiles.appendChild(fileElement);
+
+                // Read file content
+                readFileContent(file, fileObj);
+            }
+        }
+
+        function readFileContent(file, fileObj) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                fileObj.content = e.target.result;
+                fileObj.isLoaded = true;
+
+                // Update the file element to show it's ready
+                updateFileStatus(fileObj.name, 'ready');
+            };
+
+            reader.onerror = function(e) {
+                console.error('Error reading file:', file.name, e);
+                fileObj.isLoaded = false;
+                updateFileStatus(fileObj.name, 'error');
+            };
+
+            // Read based on file type
+            if (file.type.startsWith('text/') ||
+                file.type === 'application/json' ||
+                file.name.endsWith('.txt') ||
+                file.name.endsWith('.md') ||
+                file.name.endsWith('.js') ||
+                file.name.endsWith('.html') ||
+                file.name.endsWith('.css') ||
+                file.name.endsWith('.py')) {
+                // Text files - read as text
+                reader.readAsText(file);
+            } else if (file.type === 'application/pdf') {
+                // PDF files - we'll extract text content
+                extractTextFromPDF(file, fileObj);
+            } else {
+                // For other file types, we'll read as data URL
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function extractTextFromPDF(file, fileObj) {
+            // For PDF files, we need to use PDF.js to extract text
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const typedarray = new Uint8Array(e.target.result);
+
+                // Use PDF.js to extract text
+                pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                    let fullText = '';
+                    const numPages = pdf.numPages;
+                    let pagesProcessed = 0;
+
+                    // Extract text from each page
+                    for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                        pdf.getPage(pageNum).then(function(page) {
+                            return page.getTextContent();
+                        }).then(function(textContent) {
+                            let pageText = '';
+                            for (let item of textContent.items) {
+                                pageText += item.str + ' ';
+                            }
+                            fullText += `Page ${pageNum}: ${pageText}\n\n`;
+
+                            pagesProcessed++;
+                            if (pagesProcessed === numPages) {
+                                fileObj.content = fullText;
+                                fileObj.isLoaded = true;
+                                updateFileStatus(fileObj.name, 'ready');
+                            }
+                        }).catch(function(error) {
+                            console.error('Error extracting text from PDF page:', error);
+                            pagesProcessed++;
+                            if (pagesProcessed === numPages) {
+                                fileObj.content = "Could not extract text from PDF";
+                                fileObj.isLoaded = true;
+                                updateFileStatus(fileObj.name, 'ready');
+                            }
+                        });
+                    }
+                }).catch(function(error) {
+                    console.error('Error loading PDF:', error);
+                    fileObj.content = "Error loading PDF file";
+                    fileObj.isLoaded = true;
+                    updateFileStatus(fileObj.name, 'ready');
+                });
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function updateFileStatus(fileName, status) {
+            const fileElements = elements.uploadedFiles.getElementsByClassName('uploaded-file');
+
+            for (let element of fileElements) {
+                const nameElement = element.querySelector('span');
+                if (nameElement && nameElement.textContent === fileName) {
+                    const spinner = element.querySelector('.loading-spinner');
+                    const removeBtn = element.querySelector('button');
+
+                    switch (status) {
+                        case 'ready':
+                            spinner.classList.add('hidden');
+                            removeBtn.disabled = false;
+                            element.classList.add('file-status-ready');
+                            break;
+                        case 'error':
+                            spinner.classList.add('hidden');
+                            removeBtn.disabled = false;
+                            element.classList.add('file-status-error');
+                            break;
+                    }
+                    break;
+                }
             }
         }
 
@@ -1164,11 +1295,17 @@
             elements.uploadedFiles.innerHTML = '';
             uploadedFiles.forEach((fileObj, index) => {
                 const fileElement = document.createElement('div');
-                fileElement.className = 'uploaded-file';
+                fileElement.className = `uploaded-file ${fileObj.isLoaded ? 'file-status-ready' : ''}`;
                 fileElement.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
                     <span class="flex-1 truncate">${fileObj.name}</span>
-                    <button onclick="removeFile(${index})" class="text-gray-400 hover:text-red-400">
+                    <div class="loading-spinner ${fileObj.isLoaded ? 'hidden' : ''}">
+                        <svg class="animate-spin h-4 w-4 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <button onclick="removeFile(${index})" class="text-gray-400 hover:text-red-400 ml-2" ${fileObj.isLoaded ? '' : 'disabled'}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 `;
@@ -1609,10 +1746,16 @@
                     name: pdfFile.name,
                     type: pdfFile.type,
                     size: pdfFile.size,
-                    lastModified: pdfFile.lastModified
+                    lastModified: pdfFile.lastModified,
+                    content: null,
+                    isLoaded: false
                 };
 
                 uploadedFiles.push(fileObj);
+
+                // Read PDF content
+                extractTextFromPDF(pdfFile, fileObj);
+
                 renderUploadedFiles();
                 hidePdfViewerModal();
 
@@ -1715,6 +1858,13 @@
 
             if (!query && uploadedFiles.length === 0) return;
 
+            // Check if all files are loaded
+            const unloadedFiles = uploadedFiles.filter(file => !file.isLoaded);
+            if (unloadedFiles.length > 0) {
+                alert('Please wait for all files to finish loading before submitting.');
+                return;
+            }
+
             elements.button.disabled = true;
             elements.input.disabled = true;
 
@@ -1759,7 +1909,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span class="text-gray-300">EduDesk is thinking...</span>
+                        <span class="text-gray-300">EduDesk is reading your files and thinking...</span>
                     </div>
                 </div>
             `;
@@ -1774,17 +1924,25 @@
             // Text generation logic
             for (let attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
-                    // Prepare the content parts - include file information if files are uploaded
+                    // Prepare the content parts - include file content if files are uploaded
                     let parts = [{
                         text: query
                     }];
 
-                    // Add file information to the prompt
+                    // Add file content to the prompt
                     if (uploadedFiles.length > 0) {
-                        const fileList = uploadedFiles.map(f => f.name).join(', ');
-                        parts.push({
-                            text: `The user has uploaded the following files: ${fileList}. Please consider these files in your response.`
+                        let fileContentText = "I have uploaded the following files. Please analyze their content and answer my question based on them:\n\n";
+
+                        uploadedFiles.forEach((fileObj, index) => {
+                            fileContentText += `File ${index + 1}: ${fileObj.name}\n`;
+                            fileContentText += `Content:\n${fileObj.content}\n\n`;
                         });
+
+                        fileContentText += `My question is: ${query}`;
+
+                        parts = [{
+                            text: fileContentText
+                        }];
                     }
 
                     const payload = {
@@ -2151,6 +2309,5 @@
         }
     </script>
 </body>
-
 
 </html>
