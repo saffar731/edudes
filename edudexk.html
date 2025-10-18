@@ -365,6 +365,12 @@
 
         <!-- Right Side: Auth Status and New Chat Button -->
         <div class="flex items-center space-x-4">
+            <!-- Get App Button for Navbar -->
+            <button id="navbar-get-app-button" class="flex items-center px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition duration-150 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                Get App
+            </button>
+
             <button id="new-chat-button" class="hidden md:flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus mr-1"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 New Chat
@@ -399,7 +405,13 @@
                 <!-- Buttons injected by JS -->
             </div>
 
-            <!-- Tools Section -->
+            <!-- Get App Button for Sidebar -->
+            <div class="mt-4">
+                <button id="sidebar-get-app-button" class="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    Get App
+                </button>
+            </div>
 
             <!-- Chat History Section -->
             <div class="mt-6">
@@ -799,7 +811,9 @@
             nextPage: document.getElementById('next-page'),
             pageInfo: document.getElementById('page-info'),
             cropModeBtn: document.getElementById('crop-mode-btn'),
-            sendPdfBtn: document.getElementById('send-pdf-btn')
+            sendPdfBtn: document.getElementById('send-pdf-btn'),
+            navbarGetAppButton: document.getElementById('navbar-get-app-button'),
+            sidebarGetAppButton: document.getElementById('sidebar-get-app-button')
         };
 
         // === STATE MANAGEMENT ===
@@ -1768,6 +1782,27 @@
             }
         }
 
+        // === GET APP DOWNLOAD FUNCTION ===
+        // === GET APP DOWNLOAD FUNCTION ===
+        function downloadApp() {
+            // Use relative path - place your APK in an 'apk' folder in your project
+            const apkUrl = 'apk/app-release.apk';
+
+            // Create a temporary anchor element to trigger download
+            const downloadLink = document.createElement('a');
+            downloadLink.href = apkUrl;
+            downloadLink.download = 'EduDesk-App.apk';
+            downloadLink.target = '_blank';
+
+            // Append to body, click, and remove
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // Optional: Show a confirmation message
+            alert('EduDesk App download has started. If it doesn\'t start automatically, check your downloads folder.');
+        }
+
         // === SIDEBAR LOGIC ===
 
         function toggleSidebar() {
@@ -2225,6 +2260,15 @@
                 elements.sendPdfBtn.addEventListener('click', sendPdfToChat);
             }
             
+            // Set up Get App button event listeners
+            if (elements.navbarGetAppButton) {
+                elements.navbarGetAppButton.addEventListener('click', downloadApp);
+            }
+            
+            if (elements.sidebarGetAppButton) {
+                elements.sidebarGetAppButton.addEventListener('click', downloadApp);
+            }
+            
             // Set up file upload
             setupFileUpload();
             
@@ -2285,6 +2329,7 @@
         window.toggleCropMode = toggleCropMode;
         window.cancelCrop = cancelCrop;
         window.applyCrop = applyCrop;
+        window.downloadApp = downloadApp;
 
         // Additional functions for settings
         function exportChats() {
