@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civil Engineering Resources | EduDesk AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom font import and application */
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        /* Card hover effects */
+        
+        .resource-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            /* Add pointer cursor for clickability */
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: #6366f1;
+            /* Highlight border on hover */
+        }
+        /* Custom scrollbar */
+        
+        .topics-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .topics-container::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 3px;
+        }
+        /* Animation for topic cards */
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        /* Explanation Panel Animation */
+        
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 min-h-screen text-gray-100">
+    <nav class="bg-gray-800 shadow-xl border-b border-gray-700 h-16 flex items-center justify-between px-4">
+        <div class="flex items-center">
+            <a href="index.html" class="flex items-center text-xl font-bold text-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open text-indigo-400 mr-2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>                EduDesk AI
+            </a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="index.html" class="text-gray-300 hover:text-indigo-400 transition duration-150">
+                Back to Main App
+            </a>
+        </div>
+    </nav>
+
+    <main class="py-8 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4 text-white">Civil Engineering Resources</h1>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                Explore specialized topics, tools, and resources for civil engineering students and professionals.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                <div class="text-3xl font-bold text-indigo-400 mb-2">50+</div>
+                <div class="text-gray-400">Engineering Topics</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                <div class="text-3xl font-bold text-indigo-400 mb-2">15+</div>
+                <div class="text-gray-400">Design Standards</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700 mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trowel mr-3 text-indigo-400"><path d="M11 2h8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1"/><path d="m14 6-2 2"/><path d="M4 14v6"/><path d="M8 14v6"/><path d="M12 14v6"/><path d="m2 22 2-2h16l2 2"/></svg>                        Civil Engineering Topics
+                    </h2>
+
+                    <div class="mb-6">
+                        <div class="relative">
+                            <input type="text" id="topic-search" placeholder="Search topics..." class="w-full p-4 border border-gray-700 bg-gray-900 text-gray-100 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="topics-container grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto p-2">
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" onclick="showTopicContent('Structural Engineering')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Structural Engineering</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Structural Analysis</li>
+                                <li>• Concrete Design</li>
+                                <li>• Steel Structures</li>
+                                <li>• Foundation Engineering</li>
+                                <li>• Earthquake Engineering</li>
+                            </ul>
+                        </div>
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.1s" onclick="showTopicContent('Geotechnical Engineering')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mountain"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Geotechnical Engineering</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Soil Mechanics</li>
+                                <li>• Foundation Design</li>
+                                <li>• Slope Stability</li>
+                                <li>• Earth Retaining Structures</li>
+                                <li>• Soil Testing Methods</li>
+                            </ul>
+                        </div>
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.2s" onclick="showTopicContent('Transportation Engineering')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-road"><path d="M4 18h16"/><path d="M4 12h16"/><path d="M4 6h16"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Transportation Engineering</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Highway Design</li>
+                                <li>• Traffic Engineering</li>
+                                <li>• Pavement Design</li>
+                                <li>• Transportation Planning</li>
+                                <li>• Public Transit Systems</li>
+                            </ul>
+                        </div>
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.3s" onclick="showTopicContent('Water Resources')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Water Resources</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Hydraulics</li>
+                                <li>• Hydrology</li>
+                                <li>• Water Supply Systems</li>
+                                <li>• Wastewater Treatment</li>
+                                <li>• Flood Control</li>
+                            </ul>
+                        </div>
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.4s" onclick="showTopicContent('Construction Management')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Construction Management</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Project Planning</li>
+                                <li>• Cost Estimation</li>
+                                <li>• Construction Methods</li>
+                                <li>• Safety Management</li>
+                                <li>• Contract Administration</li>
+                            </ul>
+                        </div>
+
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.5s" onclick="showTopicContent('Environmental Engineering')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-leaf"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Environmental Engineering</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Water Quality</li>
+                                <li>• Air Pollution Control</li>
+                                <li>• Solid Waste Management</li>
+                                <li>• Environmental Impact Assessment</li>
+                                <li>• Sustainable Design</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="space-y-8">
+
+                <div id="explanation-panel" class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700 hidden">
+                    <h2 id="explanation-title" class="text-2xl font-bold mb-4 flex items-center text-white">
+                    </h2>
+                    <div id="explanation-content" class="text-gray-300 space-y-4">
+                    </div>
+                    <button class="mt-6 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150" onclick="hideTopicContent()">
+                        Close Explanation
+                    </button>
+                </div>
+
+
+
+                <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700" id="ai-assistant-panel">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot mr-3 text-indigo-400"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>                        Civil Engineering AI
+                    </h2>
+                    <p class="text-gray-400 mb-6">Get instant help with civil engineering concepts, calculations, and problem-solving.</p>
+
+                    <div class="space-y-4">
+                        <button onclick="window.location.href='edudexk.html?assistant=civil'" class="w-full px-4 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition duration-150 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square mr-2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Chat with Civil AI
+                        </button>
+
+                        <div class="bg-gray-700 p-4 rounded-xl">
+                            <h3 class="font-medium text-white mb-2">Try asking:</h3>
+                            <ul class="text-sm text-gray-300 space-y-2">
+                                <li class="cursor-pointer hover:text-indigo-300 transition duration-150" onclick="document.getElementById('sample-question-1').click()">• How to calculate beam deflection?</li>
+                                <li class="cursor-pointer hover:text-indigo-300 transition duration-150" onclick="document.getElementById('sample-question-2').click()">• Explain soil compaction methods</li>
+                                <li class="cursor-pointer hover:text-indigo-300 transition duration-150" onclick="document.getElementById('sample-question-3').click()">• Design a simple reinforced concrete column</li>
+                            </ul>
+
+                            <div class="hidden">
+                                <button id="sample-question-1" onclick="window.location.href='edudexk.html?assistant=civil&question=How to calculate beam deflection?'"></button>
+                                <button id="sample-question-2" onclick="window.location.href='edudexk.html?assistant=civil&question=Explain soil compaction methods'"></button>
+                                <button id="sample-question-3" onclick="window.location.href='edudexk.html?assistant=civil&question=Design a simple reinforced concrete column'"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </main>
+
+
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- Core Topic Content Data ---
+        const topicContent = {
+            'Structural Engineering': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building text-indigo-400 mr-3"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>',
+                prompt: "What is **Structural Analysis** and why is it important?",
+                explanation: `
+                    <p>Structural Analysis is the process of determining the effects of loads and stresses on physical structures and their components. It's the core of structural engineering, ensuring a structure can safely withstand all anticipated forces throughout its design life.</p>
+                    <p><strong>Key Concepts:</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li><strong>Load Types:</strong> Dead loads (structure's weight), Live loads (occupants, furniture), Environmental loads (wind, snow, seismic).</li>
+                        <li><strong>Methods:</strong> Include the Method of Joints, Method of Sections for trusses, and more complex matrix methods (Stiffness Method, Flexibility Method) for indeterminate structures.</li>
+                        <li><strong>Outputs:</strong> Internal forces (axial, shear, moment), stresses, and deflections.</li>
+                    </ul>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Practical Application:</strong> For a simple beam under a uniformly distributed load ($w$), the maximum moment ($M_{max}$) is $\\frac{wL^2}{8}$ and the maximum deflection ($\\delta_{max}$) is $\\frac{5wL^4}{384EI}$.
+                    </p>
+                `
+            },
+            'Geotechnical Engineering': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mountain text-indigo-400 mr-3"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
+                prompt: "Explain the main goals of **Soil Mechanics**.",
+                explanation: `
+                    <p>Soil Mechanics is the discipline of applying the principles of engineering mechanics to the behaviors of soil, a critical natural construction material. Its main goals are to understand soil properties and predict how soil will react to loads and environmental changes.</p>
+                    <p><strong>Main Goals:</strong></p>
+                    <ol class="list-decimal list-inside ml-4 space-y-1">
+                        <li><strong>Bearing Capacity:</strong> Determine the maximum pressure a soil foundation can sustain without failure.</li>
+                        <li><strong>Settlement:</strong> Estimate the vertical movement (sinking) a structure will undergo over time due to soil compression.</li>
+                        <li><strong>Stability:</strong> Analyze the stability of soil masses, such as slopes and earth-retaining walls, against sliding or overturning.</li>
+                        <li><strong>Permeability & Seepage:</strong> Study water flow through soil, which is crucial for dewatering, dam design, and flood control.</li>
+                    </ol>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Key Parameter:</strong> The <strong>Shear Strength</strong> ($\tau$) of soil is often described by the Mohr-Coulomb equation: $\\tau = c + \\sigma' \\tan(\\phi)$, where $c$ is cohesion, $\\sigma'$ is effective stress, and $\\phi$ is the angle of internal friction.
+                    </p>
+                `
+            },
+            'Transportation Engineering': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-road text-indigo-400 mr-3"><path d="M4 18h16"/><path d="M4 12h16"/><path d="M4 6h16"/></svg>',
+                prompt: "What is the **Design Hourly Volume (DHV)** in traffic engineering?",
+                explanation: `
+                    <p>The Design Hourly Volume (DHV) is a crucial parameter in highway design. It represents the traffic volume used for capacity and geometric design purposes. It is typically a high hourly volume, but not the absolute peak, chosen to provide a reasonable level of service most of the time without being overly costly.</p>
+                    <p><strong>Calculation and Use:</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li>DHV is usually calculated as the **30th highest hourly volume** of the year. This ensures only the top 29 peak hours (which may be extreme, rare events) exceed the design capacity.</li>
+                        <li>It is determined by taking the Annual Average Daily Traffic (AADT) and multiplying it by the **K-factor** (percentage of AADT that occurs during the design hour) and the **D-factor** (percentage of traffic traveling in the peak direction).</li>
+                    </ul>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Formula:</strong> $\\text{DHV} = \\text{AADT} \\times K \\times D$. The resulting DHV is then used to select the number of lanes, curve radii, and intersection signal timings.
+                    </p>
+                `
+            },
+            'Water Resources': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets text-indigo-400 mr-3"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>',
+                prompt: "What is the **Rational Method** in Hydrology?",
+                explanation: `
+                    <p>The Rational Method is a simple, empirical formula used in hydrology to estimate the peak runoff rate ($Q$) from a small watershed or catchment area, typically for storm sewer design.</p>
+                    <p><strong>The Equation:</strong></p>
+                    <p class="text-xl font-bold text-center my-4">$$Q = C i A$$</p>
+                    <p><strong>Where:</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li><strong>Q:</strong> Peak rate of runoff (e.g., cubic feet per second, CFS).</li>
+                        <li><strong>C:</strong> Runoff Coefficient (dimensionless), representing the ratio of runoff to rainfall. It depends on the surface type (e.g., concrete is high, forest is low).</li>
+                        <li><strong>i:</strong> Average rainfall intensity (e.g., inches per hour) for a duration equal to the time of concentration.</li>
+                        <li><strong>A:</strong> Drainage area (e.g., acres). The formula typically includes a unit conversion factor when $i$ is in in/hr and $A$ in acres.</li>
+                    </ul>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Limitation:</strong> The Rational Method is only considered reliable for small drainage areas (typically less than 50 acres) and requires a crucial assumption that the rainfall intensity is constant throughout the *time of concentration*.
+                    </p>
+                `
+            },
+            'Construction Management': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list text-indigo-400 mr-3"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+                prompt: "Define the **Critical Path Method (CPM)** in project planning.",
+                explanation: `
+                    <p>The Critical Path Method (CPM) is an algorithm for scheduling a set of project activities. It is essential for determining the minimum time required to complete the project. It achieves this by identifying the **critical path**—the longest sequence of tasks that must be completed on time for the project to finish on schedule.</p>
+                    <p><strong>CPM Key Terms:</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li><strong>Critical Path:</strong> Any delay to a task on this path will delay the entire project. Tasks on this path have zero 'float' or 'slack'.</li>
+                        <li><strong>Float (Slack):</strong> The amount of time a task can be delayed without delaying the project finish date.</li>
+                        <li><strong>Early Start/Finish (ES/EF):</strong> The earliest possible time a task can begin and end.</li>
+                        <li><strong>Late Start/Finish (LS/LF):</strong> The latest possible time a task can begin and end without delaying the project.</li>
+                    </ul>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Significance:</strong> CPM allows construction managers to prioritize resources and monitoring efforts toward the activities that pose the greatest risk to the project's deadline.
+                    </p>
+                `
+            },
+            'Environmental Engineering': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-leaf text-indigo-400 mr-3"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+                prompt: "What is the **Biochemical Oxygen Demand (BOD)**?",
+                explanation: `
+                    <p>Biochemical Oxygen Demand (BOD) is a measure of the amount of dissolved oxygen (DO) consumed by aerobic biological microorganisms while breaking down organic matter in a sample of water. It is a critical parameter in wastewater treatment and environmental water quality.</p>
+                    <p><strong>BOD in Practice:</strong></p>
+                    <ul class="list-disc list-inside ml-4 space-y-1">
+                        <li><strong>High BOD:</strong> Indicates a high concentration of biodegradable organic material. If discharged into a river, it will rapidly deplete the dissolved oxygen, leading to the death of fish and other aquatic life.</li>
+                        <li><strong>Wastewater Treatment:</strong> The primary goal of a biological wastewater treatment plant is to significantly reduce the BOD of the influent water before discharge.</li>
+                        <li><strong>BOD5:</strong> The standard test measures the oxygen demand over a five-day incubation period ($\\text{BOD}_5$) at 20°C.</li>
+                    </ul>
+                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
+                        <strong>Water Quality Standard:</strong> Treated municipal wastewater typically has a $\\text{BOD}_5$ limit of 20 to 30 mg/L before it can be safely discharged into a receiving body of water.
+                    </p>
+                `
+            }
+        };
+
+        // --- Topic Display Logic ---
+
+        const explanationPanel = document.getElementById('explanation-panel');
+        const explanationTitle = document.getElementById('explanation-title');
+        const explanationContent = document.getElementById('explanation-content');
+        const quickToolsPanel = document.getElementById('quick-tools-panel');
+        const aiAssistantPanel = document.getElementById('ai-assistant-panel');
+        const updatesPanel = document.getElementById('updates-panel');
+
+        function showTopicContent(topicName) {
+            const data = topicContent[topicName];
+
+            if (data) {
+                // Set content
+                explanationTitle.innerHTML = `${data.icon} ${topicName}`;
+                explanationContent.innerHTML = `
+                    <h3 class="text-xl font-medium text-indigo-400 mb-3">${data.prompt}</h3>
+                    ${data.explanation}
+                `;
+
+                // Show explanation panel with animation
+                explanationPanel.classList.remove('hidden');
+                explanationPanel.classList.add('slide-in-right');
+
+                // Hide other panels
+                quickToolsPanel.classList.add('hidden');
+                aiAssistantPanel.classList.add('hidden');
+                updatesPanel.classList.add('hidden');
+
+                // Scroll to the top of the explanation panel
+                explanationPanel.scrollIntoView({
+                    behavior: 'smooth'
+                });
+
+            } else {
+                alert(`Content for topic "${topicName}" is not available yet.`);
+            }
+        }
+
+        function hideTopicContent() {
+            // Hide explanation panel
+            explanationPanel.classList.add('hidden');
+            explanationPanel.classList.remove('slide-in-right');
+
+            // Show other panels
+            quickToolsPanel.classList.remove('hidden');
+            aiAssistantPanel.classList.remove('hidden');
+            updatesPanel.classList.remove('hidden');
+        }
+
+        // --- Existing Search Functionality (Modified to use display: block/none) ---
+        document.getElementById('topic-search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const topicCards = document.querySelectorAll('.resource-card');
+
+            topicCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const content = card.textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Add animation delays to cards (Existing logic)
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.animate-fade-in-up');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+
+</html>
