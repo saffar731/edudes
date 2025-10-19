@@ -8,28 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom font import and application */
-        
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease;
         }
-        /* Card hover effects */
         
         .resource-card {
             transition: all 0.3s ease;
             cursor: pointer;
-            /* Add pointer cursor for clickability */
         }
         
         .resource-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             border-color: #6366f1;
-            /* Highlight border on hover */
         }
-        /* Custom scrollbar */
         
         .topics-container::-webkit-scrollbar {
             width: 6px;
@@ -39,7 +33,6 @@
             background-color: #4b5563;
             border-radius: 3px;
         }
-        /* Animation for topic cards */
         
         @keyframes fadeInUp {
             from {
@@ -55,7 +48,6 @@
         .animate-fade-in-up {
             animation: fadeInUp 0.5s ease forwards;
         }
-        /* Explanation Panel Animation */
         
         .slide-in-right {
             animation: slideInRight 0.3s ease-out forwards;
@@ -71,6 +63,85 @@
                 transform: translateX(0);
             }
         }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th,
+        td {
+            border: 1px solid #4b5563;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #374151;
+        }
+        
+        .formula {
+            background-color: #1f2937;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #6366f1;
+            margin: 1rem 0;
+        }
+        
+        .calculation-box {
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .calculation-row:last-child {
+            border-bottom: none;
+        }
+        
+        .project-section {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #10b981;
+        }
+        
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-card {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .code-reference {
+            background-color: #1f2937;
+            border-left: 4px solid #f59e0b;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            font-family: monospace;
+        }
     </style>
 </head>
 
@@ -82,7 +153,7 @@
             </a>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="edudexk.html" class="text-gray-300 hover:text-indigo-400 transition duration-150">
+            <a href="index.html" class="text-gray-300 hover:text-indigo-400 transition duration-150">
                 Back to Main App
             </a>
         </div>
@@ -92,18 +163,26 @@
         <div class="text-center mb-12">
             <h1 class="text-4xl font-bold mb-4 text-white">Civil Engineering Resources</h1>
             <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-                Explore specialized topics, tools, and resources for civil engineering students and professionals.
+                Complete collection of civil engineering standards, calculations, and project data from Excel sheets.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
-                <div class="text-3xl font-bold text-indigo-400 mb-2">50+</div>
+                <div class="text-3xl font-bold text-indigo-400 mb-2">25+</div>
                 <div class="text-gray-400">Engineering Topics</div>
             </div>
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
                 <div class="text-3xl font-bold text-indigo-400 mb-2">15+</div>
-                <div class="text-gray-400">Design Standards</div>
+                <div class="text-gray-400">IS Codes</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                <div class="text-3xl font-bold text-indigo-400 mb-2">50+</div>
+                <div class="text-gray-400">Formulas</div>
+            </div>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                <div class="text-3xl font-bold text-indigo-400 mb-2">4</div>
+                <div class="text-gray-400">Projects</div>
             </div>
         </div>
 
@@ -111,121 +190,278 @@
             <div class="lg:col-span-2">
                 <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700 mb-8">
                     <h2 class="text-2xl font-bold mb-6 flex items-center text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trowel mr-3 text-indigo-400"><path d="M11 2h8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1"/><path d="m14 6-2 2"/><path d="M4 14v6"/><path d="M8 14v6"/><path d="M12 14v6"/><path d="m2 22 2-2h16l2 2"/></svg>                        Civil Engineering Topics
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trowel mr-3 text-indigo-400"><path d="M11 2h8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1"/><path d="m14 6-2 2"/><path d="M4 14v6"/><path d="M8 14v6"/><path d="M12 14v6"/><path d="m2 22 2-2h16l2 2"/></svg>                        Complete Engineering Database
                     </h2>
 
                     <div class="mb-6">
                         <div class="relative">
-                            <input type="text" id="topic-search" placeholder="Search topics..." class="w-full p-4 border border-gray-700 bg-gray-900 text-gray-100 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+                            <input type="text" id="topic-search" placeholder="Search all topics..." class="w-full p-4 border border-gray-700 bg-gray-900 text-gray-100 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         </div>
                     </div>
 
-                    <div class="topics-container grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto p-2">
+                    <div class="topics-container grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto p-2">
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" onclick="showTopicContent('Structural Engineering')">
+                        <!-- Unit Conversion -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" onclick="showTopicContent('Unit Conversion')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Structural Engineering</h3>
+                                <h3 class="text-lg font-semibold text-white">Unit Conversion (IS 786:1967)</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Structural Analysis</li>
-                                <li>• Concrete Design</li>
-                                <li>• Steel Structures</li>
-                                <li>• Foundation Engineering</li>
-                                <li>• Earthquake Engineering</li>
+                                <li>• 13 conversion factors</li>
+                                <li>• Length, Area, Volume</li>
+                                <li>• Force & Energy units</li>
                             </ul>
                         </div>
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.1s" onclick="showTopicContent('Geotechnical Engineering')">
+                        <!-- Admixture -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.1s" onclick="showTopicContent('Admixture')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mountain"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-beaker"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Geotechnical Engineering</h3>
+                                <h3 class="text-lg font-semibold text-white">Admixture (IS 9103)</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Soil Mechanics</li>
-                                <li>• Foundation Design</li>
-                                <li>• Slope Stability</li>
-                                <li>• Earth Retaining Structures</li>
-                                <li>• Soil Testing Methods</li>
+                                <li>• Design mix specifications</li>
+                                <li>• Concrete additives</li>
+                                <li>• Performance enhancers</li>
                             </ul>
                         </div>
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.2s" onclick="showTopicContent('Transportation Engineering')">
+                        <!-- Unit Weight -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.2s" onclick="showTopicContent('Unit Weight')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-road"><path d="M4 18h16"/><path d="M4 12h16"/><path d="M4 6h16"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-weight"><circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Transportation Engineering</h3>
+                                <h3 class="text-lg font-semibold text-white">Unit Weight (IS 1786:2008)</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Highway Design</li>
-                                <li>• Traffic Engineering</li>
-                                <li>• Pavement Design</li>
-                                <li>• Transportation Planning</li>
-                                <li>• Public Transit Systems</li>
+                                <li>• Steel bar weights</li>
+                                <li>• 8mm to 32mm diameters</li>
+                                <li>• Kg/m calculations</li>
                             </ul>
                         </div>
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.3s" onclick="showTopicContent('Water Resources')">
+                        <!-- Min Cement Content -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.3s" onclick="showTopicContent('Min Cement Content')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-box"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Water Resources</h3>
+                                <h3 class="text-lg font-semibold text-white">Min Cement Content (IS 456:2000)</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Hydraulics</li>
-                                <li>• Hydrology</li>
-                                <li>• Water Supply Systems</li>
-                                <li>• Wastewater Treatment</li>
-                                <li>• Flood Control</li>
+                                <li>• PCC & RCC requirements</li>
+                                <li>• Exposure conditions</li>
+                                <li>• Grade specifications</li>
                             </ul>
                         </div>
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.4s" onclick="showTopicContent('Construction Management')">
+                        <!-- Standard Deviation -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.4s" onclick="showTopicContent('Standard Deviation')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Standard Deviation (IS 456:2000)</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• M15, M25, M40 values</li>
+                                <li>• Quality control parameter</li>
+                                <li>• Strength calculations</li>
+                            </ul>
+                        </div>
+
+                        <!-- Deshuttering Time -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.5s" onclick="showTopicContent('Deshuttering Time')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Deshuttering Time (IS 456:2000)</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Vertical members: 16-24 days</li>
+                                <li>• Slab & beam soffits</li>
+                                <li>• Props removal timing</li>
+                            </ul>
+                        </div>
+
+                        <!-- Cube Samples -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.6s" onclick="showTopicContent('Cube Samples')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cube"><path d="m21 16-9 5-9-5"/><path d="m21 21-9 5-9-5"/><path d="m21 11-9 5-9-5"/><path d="M3 5l9 5 9-5"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Cube Samples (IS 456:2000)</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Sampling frequency</li>
+                                <li>• 1-50+ cubic meters</li>
+                                <li>• Testing requirements</li>
+                            </ul>
+                        </div>
+
+                        <!-- Strength Calculations -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.7s" onclick="showTopicContent('Strength Calculations')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Strength Calculations</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• f28(reqd) & f28(target)</li>
+                                <li>• fck calculations</li>
+                                <li>• Time-based strength</li>
+                            </ul>
+                        </div>
+
+                        <!-- Change in Diameter -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.8s" onclick="showTopicContent('Change in Diameter')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle"><circle cx="12" cy="12" r="10"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Change in Diameter</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Reinforcement spacing</li>
+                                <li>• 12mm to 10mm conversion</li>
+                                <li>• C/c distance formulas</li>
+                            </ul>
+                        </div>
+
+                        <!-- Measurement Methods -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.9s" onclick="showTopicContent('Measurement Methods')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tape-measure"><path d="M10 2v3"/><path d="M10 12a2 2 0 1 1-2-2"/><path d="M14 12a2 2 0 1 0 2-2"/><path d="M10 19a2 2 0 0 1-2-2v-5a7 7 0 0 1 14 0v5a2 2 0 0 1-2 2Z"/><path d="m8 21 4-4"/><path d="m16 21-4-4"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Measurement Methods</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Concrete (IS 1200-II)</li>
+                                <li>• Brickwork (IS 1200-III)</li>
+                                <li>• Formwork & Plaster</li>
+                            </ul>
+                        </div>
+
+                        <!-- Equivalent Areas -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.0s" onclick="showTopicContent('Equivalent Areas')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Equivalent Areas</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Wood work coefficients</li>
+                                <li>• Steel work coefficients</li>
+                                <li>• Painting measurements</li>
+                            </ul>
+                        </div>
+
+                        <!-- Batten Requirements -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.1s" onclick="showTopicContent('Batten Requirements')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Batten Requirements</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• 3" x 2" battens</li>
+                                <li>• 4" x 3" battens</li>
+                                <li>• Plywood calculations</li>
+                            </ul>
+                        </div>
+
+                        <!-- Concrete Mix Design -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.2s" onclick="showTopicContent('Concrete Mix Design')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mixer"><path d="M12 12v.01"/><path d="M18 6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4"/><path d="M2 14h4"/><path d="M5 14a2 2 0 0 1 0-4h8a2 2 0 0 1 0 4"/><path d="M8 14v.01"/><path d="M2 18h4"/><path d="M5 18a2 2 0 0 1 0-4h8a2 2 0 0 1 0 4"/><path d="M8 18v.01"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Concrete Mix Design</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• 1:1.5:3 (M20)</li>
+                                <li>• 1:3:6 (M10)</li>
+                                <li>• Material proportions</li>
+                            </ul>
+                        </div>
+
+                        <!-- Trading Calculations -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.3s" onclick="showTopicContent('Trading Calculations')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Trading Calculations</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Buy Trade formulas</li>
+                                <li>• Sell Trade formulas</li>
+                                <li>• Net position calculation</li>
+                            </ul>
+                        </div>
+
+                        <!-- Contacts -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.4s" onclick="showTopicContent('Contacts')">
+                            <div class="flex items-start mb-3">
+                                <div class="bg-indigo-900 p-2 rounded-lg mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-contact"><path d="M16 2v2"/><path d="M7 22v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M8 2v2"/><circle cx="12" cy="11" r="3"/><rect x="3" y="4" width="18" height="18" rx="2"/></svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-white">Contacts</h3>
+                            </div>
+                            <ul class="text-gray-300 text-sm space-y-1 ml-11">
+                                <li>• Vendor contacts</li>
+                                <li>• Service providers</li>
+                                <li>• Professional network</li>
+                            </ul>
+                        </div>
+
+                        <!-- Project Discussions -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.5s" onclick="showTopicContent('Project Discussions')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Construction Management</h3>
+                                <h3 class="text-lg font-semibold text-white">Project Discussions</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Project Planning</li>
-                                <li>• Cost Estimation</li>
-                                <li>• Construction Methods</li>
-                                <li>• Safety Management</li>
-                                <li>• Contract Administration</li>
+                                <li>• 4 active projects</li>
+                                <li>• 25+ discussion points</li>
+                                <li>• Pending decisions</li>
                             </ul>
                         </div>
 
-                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 0.5s" onclick="showTopicContent('Environmental Engineering')">
+                        <!-- Expenses -->
+                        <div class="resource-card bg-gray-700 p-4 rounded-xl border border-gray-600 animate-fade-in-up" style="animation-delay: 1.6s" onclick="showTopicContent('Expenses')">
                             <div class="flex items-start mb-3">
                                 <div class="bg-indigo-900 p-2 rounded-lg mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-leaf"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-white">Environmental Engineering</h3>
+                                <h3 class="text-lg font-semibold text-white">Expenses Tracking</h3>
                             </div>
                             <ul class="text-gray-300 text-sm space-y-1 ml-11">
-                                <li>• Water Quality</li>
-                                <li>• Air Pollution Control</li>
-                                <li>• Solid Waste Management</li>
-                                <li>• Environmental Impact Assessment</li>
-                                <li>• Sustainable Design</li>
+                                <li>• 30+ expense items</li>
+                                <li>• ₹21,791 total</li>
+                                <li>• Multiple locations</li>
                             </ul>
                         </div>
+
                     </div>
                 </div>
-
-
             </div>
 
             <div class="space-y-8">
-
                 <div id="explanation-panel" class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700 hidden">
                     <h2 id="explanation-title" class="text-2xl font-bold mb-4 flex items-center text-white">
                     </h2>
@@ -235,8 +471,6 @@
                         Close Explanation
                     </button>
                 </div>
-
-
 
                 <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl ring-1 ring-gray-700" id="ai-assistant-panel">
                     <h2 class="text-2xl font-bold mb-4 flex items-center text-white">
@@ -266,181 +500,497 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </main>
-
-
 
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // --- Core Topic Content Data ---
+        // --- Complete Topic Content Data ---
         const topicContent = {
-            'Structural Engineering': {
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building text-indigo-400 mr-3"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>',
-                prompt: "What is **Structural Analysis** and why is it important?",
+            'Unit Conversion': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler text-indigo-400 mr-3"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>',
+                prompt: "What are the standard unit conversions as per IS 786:1967?",
                 explanation: `
-                    <p>Structural Analysis is the process of determining the effects of loads and stresses on physical structures and their components. It's the core of structural engineering, ensuring a structure can safely withstand all anticipated forces throughout its design life.</p>
-                    <p><strong>Key Concepts:</strong></p>
+                    <p>IS 786:1967 provides standard conversion factors for civil engineering measurements.</p>
+                    <table>
+                        <thead><tr><th>From</th><th>To</th><th>Factor</th></tr></thead>
+                        <tbody>
+                            <tr><td>Inch</td><td>Centimeter</td><td>2.54</td></tr>
+                            <tr><td>Meter</td><td>Feet</td><td>3.28084</td></tr>
+                            <tr><td>Feet</td><td>Meter</td><td>0.3048</td></tr>
+                            <tr><td>Sq.m</td><td>Sq.ft</td><td>10.7639</td></tr>
+                            <tr><td>Sq.ft</td><td>Sq.m</td><td>0.092903</td></tr>
+                            <tr><td>Acre</td><td>Sqm</td><td>4046.86</td></tr>
+                            <tr><td>Hectare</td><td>Acre</td><td>2.47105</td></tr>
+                            <tr><td>Cu.m</td><td>Cu.ft</td><td>35.3147</td></tr>
+                            <tr><td>Cu.ft</td><td>Cu.m</td><td>0.0283168</td></tr>
+                            <tr><td>Kgf</td><td>N</td><td>9.80665</td></tr>
+                            <tr><td>Kgf/sq cm</td><td>N/sq m</td><td>98066.5</td></tr>
+                            <tr><td>Joules</td><td>KWH</td><td>2.77778x10⁻⁷</td></tr>
+                            <tr><td>KWH</td><td>Joules</td><td>3.6x10⁶</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Admixture': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-beaker text-indigo-400 mr-3"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>',
+                prompt: "What are the admixture specifications as per IS 9103?",
+                explanation: `
+                    <p>IS 9103 covers specifications for concrete admixtures used in design mix concrete.</p>
+                    <div class="code-reference">IS 9103 - Concrete Admixtures Specification</div>
+                    <p><strong>Types of Admixtures:</strong></p>
                     <ul class="list-disc list-inside ml-4 space-y-1">
-                        <li><strong>Load Types:</strong> Dead loads (structure's weight), Live loads (occupants, furniture), Environmental loads (wind, snow, seismic).</li>
-                        <li><strong>Methods:</strong> Include the Method of Joints, Method of Sections for trusses, and more complex matrix methods (Stiffness Method, Flexibility Method) for indeterminate structures.</li>
-                        <li><strong>Outputs:</strong> Internal forces (axial, shear, moment), stresses, and deflections.</li>
+                        <li>Water-reducing admixtures</li>
+                        <li>Retarding admixtures</li>
+                        <li>Accelerating admixtures</li>
+                        <li>Air-entraining admixtures</li>
+                        <li>Superplasticizers</li>
                     </ul>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Practical Application:</strong> For a simple beam under a uniformly distributed load ($w$), the maximum moment ($M_{max}$) is $\\frac{wL^2}{8}$ and the maximum deflection ($\\delta_{max}$) is $\\frac{5wL^4}{384EI}$.
-                    </p>
+                    <div class="formula">
+                        <strong>Application:</strong> Admixtures are used to improve concrete properties like workability, durability, and strength. They should be used as per manufacturer's recommendations and IS specifications.
+                    </div>
                 `
             },
-            'Geotechnical Engineering': {
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mountain text-indigo-400 mr-3"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>',
-                prompt: "Explain the main goals of **Soil Mechanics**.",
+            'Unit Weight': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-weight text-indigo-400 mr-3"><circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/></svg>',
+                prompt: "What are the unit weights of steel bars as per IS 1786:2008?",
                 explanation: `
-                    <p>Soil Mechanics is the discipline of applying the principles of engineering mechanics to the behaviors of soil, a critical natural construction material. Its main goals are to understand soil properties and predict how soil will react to loads and environmental changes.</p>
-                    <p><strong>Main Goals:</strong></p>
-                    <ol class="list-decimal list-inside ml-4 space-y-1">
-                        <li><strong>Bearing Capacity:</strong> Determine the maximum pressure a soil foundation can sustain without failure.</li>
-                        <li><strong>Settlement:</strong> Estimate the vertical movement (sinking) a structure will undergo over time due to soil compression.</li>
-                        <li><strong>Stability:</strong> Analyze the stability of soil masses, such as slopes and earth-retaining walls, against sliding or overturning.</li>
-                        <li><strong>Permeability & Seepage:</strong> Study water flow through soil, which is crucial for dewatering, dam design, and flood control.</li>
-                    </ol>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Key Parameter:</strong> The <strong>Shear Strength</strong> ($\tau$) of soil is often described by the Mohr-Coulomb equation: $\\tau = c + \\sigma' \\tan(\\phi)$, where $c$ is cohesion, $\\sigma'$ is effective stress, and $\\phi$ is the angle of internal friction.
-                    </p>
+                    <p>IS 1786:2008 specifies the unit weights for various diameters of steel reinforcement bars.</p>
+                    <table>
+                        <thead><tr><th>Dia (mm)</th><th>Weight (kg/m)</th></tr></thead>
+                        <tbody>
+                            <tr><td>8 ф</td><td>0.395</td></tr>
+                            <tr><td>10 ф</td><td>0.617</td></tr>
+                            <tr><td>12 ф</td><td>0.888</td></tr>
+                            <tr><td>16 ф</td><td>1.58</td></tr>
+                            <tr><td>20 ф</td><td>2.47</td></tr>
+                            <tr><td>25 ф</td><td>3.85</td></tr>
+                            <tr><td>32 ф</td><td>6.31</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="formula">
+                        <strong>Formula:</strong> Weight per meter = D²/162, where D is diameter in mm
+                    </div>
                 `
             },
-            'Transportation Engineering': {
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-road text-indigo-400 mr-3"><path d="M4 18h16"/><path d="M4 12h16"/><path d="M4 6h16"/></svg>',
-                prompt: "What is the **Design Hourly Volume (DHV)** in traffic engineering?",
+            'Min Cement Content': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-box text-indigo-400 mr-3"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+                prompt: "What is the minimum cement content requirement as per IS 456:2000?",
                 explanation: `
-                    <p>The Design Hourly Volume (DHV) is a crucial parameter in highway design. It represents the traffic volume used for capacity and geometric design purposes. It is typically a high hourly volume, but not the absolute peak, chosen to provide a reasonable level of service most of the time without being overly costly.</p>
-                    <p><strong>Calculation and Use:</strong></p>
+                    <p>IS 456:2000 specifies minimum cement content requirements for different exposure conditions.</p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Plain Cement Concrete (PCC)</h3>
+                    <table>
+                        <thead><tr><th>Exposure</th><th>Grade</th><th>Kg/cum</th></tr></thead>
+                        <tbody>
+                            <tr><td>Mild</td><td></td><td>220.0</td></tr>
+                            <tr><td>Moderate</td><td>M15</td><td>240.0</td></tr>
+                            <tr><td>Severe</td><td>M20</td><td>250.0</td></tr>
+                            <tr><td>Very severe</td><td>M20</td><td>260.0</td></tr>
+                            <tr><td>Extreme</td><td>M25</td><td>280.0</td></tr>
+                        </tbody>
+                    </table>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Reinforced Cement Concrete (RCC)</h3>
+                    <table>
+                        <thead><tr><th>Exposure</th><th>Grade</th><th>Kg/cum</th></tr></thead>
+                        <tbody>
+                            <tr><td>Mild</td><td>M20</td><td>300.0</td></tr>
+                            <tr><td>Moderate</td><td>M25</td><td>300.0</td></tr>
+                            <tr><td>Severe</td><td>M30</td><td>320.0</td></tr>
+                            <tr><td>Very severe</td><td>M35</td><td>340.0</td></tr>
+                            <tr><td>Extreme</td><td>M40</td><td>360.0</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Standard Deviation': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up text-indigo-400 mr-3"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+                prompt: "What are the standard deviation values for different concrete grades?",
+                explanation: `
+                    <p>Standard deviation values used in concrete mix design for quality control.</p>
+                    <table>
+                        <thead><tr><th>Concrete Grade</th><th>Standard Deviation (N/sqmm)</th></tr></thead>
+                        <tbody>
+                            <tr><td>M10</td><td>-</td></tr>
+                            <tr><td>M15</td><td>3.5</td></tr>
+                            <tr><td>M20</td><td>-</td></tr>
+                            <tr><td>M25</td><td>4.0</td></tr>
+                            <tr><td>M30</td><td>-</td></tr>
+                            <tr><td>M35</td><td>-</td></tr>
+                            <tr><td>M40</td><td>5.0</td></tr>
+                            <tr><td>M45</td><td>-</td></tr>
+                            <tr><td>M50</td><td>-</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="formula">
+                        <strong>Target Mean Strength Formula:</strong> f'ck = fck + 1.65 × σ
+                    </div>
+                `
+            },
+            'Deshuttering Time': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-indigo-400 mr-3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+                prompt: "What is the recommended time for deshuttering as per IS 456:2000?",
+                explanation: `
+                    <p>Minimum time required before removing formwork to ensure concrete has sufficient strength.</p>
+                    <table>
+                        <thead><tr><th>Location</th><th>Days</th></tr></thead>
+                        <tbody>
+                            <tr><td>Vertical: Column, wall, beam</td><td>16-24</td></tr>
+                            <tr><td>Soffit to slab</td><td>3.0</td></tr>
+                            <tr><td>Soffit to beam</td><td>7.0</td></tr>
+                            <tr><td>Props to beam ≤ 4.5 mtr</td><td>7.0</td></tr>
+                            <tr><td>Props to beam > 4.5 mtr</td><td>14.0</td></tr>
+                            <tr><td>Props to slab ≤ 6.0 mtr</td><td>14.0</td></tr>
+                            <tr><td>Props to slab > 6.0 mtr</td><td>21.0</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Cube Samples': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cube text-indigo-400 mr-3"><path d="m21 16-9 5-9-5"/><path d="m21 21-9 5-9-5"/><path d="m21 11-9 5-9-5"/><path d="M3 5l9 5 9-5"/></svg>',
+                prompt: "How many cube samples are required for concrete testing?",
+                explanation: `
+                    <p>Frequency of concrete sampling based on volume of concrete placed.</p>
+                    <table>
+                        <thead><tr><th>Work in Cum</th><th>Sample</th></tr></thead>
+                        <tbody>
+                            <tr><td>1-5</td><td>1.0</td></tr>
+                            <tr><td>6-15</td><td>2.0</td></tr>
+                            <tr><td>16-30</td><td>3.0</td></tr>
+                            <tr><td>31-50</td><td>4.0</td></tr>
+                            <tr><td>51 and above</td><td>4 + (1 for each 50 cum or part)</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Strength Calculations': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator text-indigo-400 mr-3"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>',
+                prompt: "How to calculate concrete strength parameters?",
+                explanation: `
+                    <p>Concrete strength calculations for determining target mean strength.</p>
+                    <div class="formula">
+                        <strong>Key Formulas:</strong><br>
+                        f28(target) = f28(reqd) + 1.65 × Standard Deviation<br>
+                        fck(reqd) = ROUND(t × f28(reqd) / (4.704 + 0.832 × t), 2)<br>
+                        fck(target) = ROUND(t × f28(target) / (4.704 + 0.832 × t), 2)<br>
+                        Where: t = time in days, a = 4.7, b = 0.833
+                    </div>
+                    <table>
+                        <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th></tr></thead>
+                        <tbody>
+                            <tr><td>f28(reqd)</td><td>25.0</td><td>N/sqmm</td></tr>
+                            <tr><td>f28(target)</td><td>= f28(reqd) + 1.65 × 5</td><td>N/sqmm</td></tr>
+                            <tr><td>t (days)</td><td>7.0</td><td>N/sqmm</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Change in Diameter': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle text-indigo-400 mr-3"><circle cx="12" cy="12" r="10"/></svg>',
+                prompt: "How to calculate reinforcement spacing when changing diameter?",
+                explanation: `
+                    <p>Calculations for changing reinforcement bar diameter while maintaining equivalent area.</p>
+                    <div class="calculation-box">
+                        <div class="calculation-row">
+                            <span>Original: 12mm dia @ 100mm C/C</span>
+                            <span class="font-mono">Area: 113.1 mm²/m</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>New: 10mm dia spacing</span>
+                            <span class="font-mono">= ROUND(100 × 10² / 12², 0)</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Result:</span>
+                            <span class="font-mono">69mm C/C</span>
+                        </div>
+                    </div>
+                    <div class="formula">
+                        <strong>Formula:</strong> New spacing = (Original spacing × New diameter²) / Original diameter²
+                    </div>
+                `
+            },
+            'Measurement Methods': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tape-measure text-indigo-400 mr-3"><path d="M10 2v3"/><path d="M10 12a2 2 0 1 1-2-2"/><path d="M14 12a2 2 0 1 0 2-2"/><path d="M10 19a2 2 0 0 1-2-2v-5a7 7 0 0 1 14 0v5a2 2 0 0 1-2 2Z"/><path d="m8 21 4-4"/><path d="m16 21-4-4"/></svg>',
+                prompt: "What are the standard measurement methods for construction work?",
+                explanation: `
+                    <p>IS 1200 provides standardized methods of measurement for construction activities.</p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Concrete (IS 1200-II) - No Deductions</h3>
                     <ul class="list-disc list-inside ml-4 space-y-1">
-                        <li>DHV is usually calculated as the **30th highest hourly volume** of the year. This ensures only the top 29 peak hours (which may be extreme, rare events) exceed the design capacity.</li>
-                        <li>It is determined by taking the Annual Average Daily Traffic (AADT) and multiplying it by the **K-factor** (percentage of AADT that occurs during the design hour) and the **D-factor** (percentage of traffic traveling in the peak direction).</li>
+                        <li>Ends of dissimilar materials up to 500 cm²</li>
+                        <li>Opening up to 0.1 m²</li>
+                        <li>Volume occupied by reinforcement</li>
+                        <li>Pipes, conduits not exceeding 100 cm² each</li>
                     </ul>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Formula:</strong> $\\text{DHV} = \\text{AADT} \\times K \\times D$. The resulting DHV is then used to select the number of lanes, curve radii, and intersection signal timings.
-                    </p>
-                `
-            },
-            'Water Resources': {
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets text-indigo-400 mr-3"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>',
-                prompt: "What is the **Rational Method** in Hydrology?",
-                explanation: `
-                    <p>The Rational Method is a simple, empirical formula used in hydrology to estimate the peak runoff rate ($Q$) from a small watershed or catchment area, typically for storm sewer design.</p>
-                    <p><strong>The Equation:</strong></p>
-                    <p class="text-xl font-bold text-center my-4">$$Q = C i A$$</p>
-                    <p><strong>Where:</strong></p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Brickwork (IS 1200-III) - No Deductions</h3>
                     <ul class="list-disc list-inside ml-4 space-y-1">
-                        <li><strong>Q:</strong> Peak rate of runoff (e.g., cubic feet per second, CFS).</li>
-                        <li><strong>C:</strong> Runoff Coefficient (dimensionless), representing the ratio of runoff to rainfall. It depends on the surface type (e.g., concrete is high, forest is low).</li>
-                        <li><strong>i:</strong> Average rainfall intensity (e.g., inches per hour) for a duration equal to the time of concentration.</li>
-                        <li><strong>A:</strong> Drainage area (e.g., acres). The formula typically includes a unit conversion factor when $i$ is in in/hr and $A$ in acres.</li>
+                        <li>Ends of dissimilar materials up to 0.10 sqm</li>
+                        <li>Opening up to 0.10 sqm area</li>
+                        <li>Wall plates, bed plates where thickness ≤ 10 cm</li>
                     </ul>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Limitation:</strong> The Rational Method is only considered reliable for small drainage areas (typically less than 50 acres) and requires a crucial assumption that the rainfall intensity is constant throughout the *time of concentration*.
-                    </p>
                 `
             },
-            'Construction Management': {
+            'Equivalent Areas': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square text-indigo-400 mr-3"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>',
+                prompt: "What are the equivalent plain area coefficients for uneven surfaces?",
+                explanation: `
+                    <p>Coefficients for calculating actual surface area for painting and finishing.</p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Wood Work</h3>
+                    <table>
+                        <thead><tr><th>Description</th><th>Coefficient</th></tr></thead>
+                        <tbody>
+                            <tr><td>Panelled or framed doors</td><td>1.30 (each side)</td></tr>
+                            <tr><td>Flush doors</td><td>1.20 (each side)</td></tr>
+                            <tr><td>Fully glazed or gauzed</td><td>0.80 (each side)</td></tr>
+                            <tr><td>Fully venetianed or louvered</td><td>1.80 (each side)</td></tr>
+                        </tbody>
+                    </table>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Steel Work</h3>
+                    <table>
+                        <thead><tr><th>Description</th><th>Coefficient</th></tr></thead>
+                        <tbody>
+                            <tr><td>Plain sheeted steel doors</td><td>1.10 (each side)</td></tr>
+                            <tr><td>Fully glazed steel doors</td><td>0.50 (each side)</td></tr>
+                            <tr><td>Corrugated sheeted steel</td><td>1.25 (each side)</td></tr>
+                            <tr><td>Collapsible gates</td><td>1.50 (all over)</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            'Batten Requirements': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid text-indigo-400 mr-3"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>',
+                prompt: "What are the batten requirements for formwork?",
+                explanation: `
+                    <p>Batten calculations for formwork support systems.</p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">3" x 2" Battens</h3>
+                    <div class="calculation-box">
+                        <div class="calculation-row">
+                            <span>Ply size 8.0 ft</span>
+                            <span class="font-mono">Batten: =ROUND(8/1.5,0)+1 = 6 ft</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Ply size 4.0 ft</span>
+                            <span class="font-mono">Batten: =ROUND(4/1.5,0)+1 = 4 ft</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Total length</span>
+                            <span class="font-mono">= (8×6) + (4×4) = 64 Rft</span>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">4" x 3" Battens</h3>
+                    <div class="calculation-box">
+                        <div class="calculation-row">
+                            <span>Ply size 8.0 ft</span>
+                            <span class="font-mono">Batten: 5.0 ft</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Total calculation</span>
+                            <span class="font-mono">Based on ply area requirements</span>
+                        </div>
+                    </div>
+                `
+            },
+            'Concrete Mix Design': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mixer text-indigo-400 mr-3"><path d="M12 12v.01"/><path d="M18 6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4"/><path d="M2 14h4"/><path d="M5 14a2 2 0 0 1 0-4h8a2 2 0 0 1 0 4"/><path d="M8 14v.01"/><path d="M2 18h4"/><path d="M5 18a2 2 0 0 1 0-4h8a2 2 0 0 1 0 4"/><path d="M8 18v.01"/></svg>',
+                prompt: "What are the standard concrete mix proportions?",
+                explanation: `
+                    <p>Nominal mix proportions for different concrete grades.</p>
+                    <table>
+                        <thead><tr><th>Item</th><th>1:1.5:3 (M20)</th><th>1:2:4 (M15)</th><th>1:3:6 (M10)</th><th>1:4:10 (M7.5)</th></tr></thead>
+                        <tbody>
+                            <tr><td>Cement (kg)</td><td>403.0</td><td>317.0</td><td>222.0</td><td>171.0</td></tr>
+                            <tr><td>Sand (kg)</td><td>672.0</td><td>704.0</td><td>739.0</td><td>758.0</td></tr>
+                            <tr><td>Coarse Aggregate (kg)</td><td>1218.0</td><td>1276.0</td><td>1330.0</td><td>1375.0</td></tr>
+                            <tr><td>Water (liters)</td><td>200.0</td><td>160.0</td><td>110.0</td><td>85.0</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="formula">
+                        <strong>Material Densities:</strong><br>
+                        Cement: 1440 kg/cum, Sand: 1600 kg/cum, Coarse Aggregate: 1450 kg/cum
+                    </div>
+                `
+            },
+            'Trading Calculations': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up text-indigo-400 mr-3"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+                prompt: "What are the trading calculation formulas?",
+                explanation: `
+                    <p>Trading formulas for calculating buy and sell positions.</p>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Buy Trade Calculations</h3>
+                    <div class="calculation-box">
+                        <div class="calculation-row">
+                            <span>Initial Buy Amount (A2):</span>
+                            <span class="font-mono">117,172.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Buy Adjustment (A3):</span>
+                            <span class="font-mono">-150.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Net Buy (A4 = A2 + A3):</span>
+                            <span class="font-mono">117,022.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Final Buy Position (A5 = A4 + 5):</span>
+                            <span class="font-mono">117,027.0</span>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-medium mt-4 mb-2 text-indigo-300">Sell Trade Calculations</h3>
+                    <div class="calculation-box">
+                        <div class="calculation-row">
+                            <span>Initial Sell Reference (A8 = A2):</span>
+                            <span class="font-mono">117,172.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Sell Adjustment (A9):</span>
+                            <span class="font-mono">150.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Net Sell (A10 = A8 + A9):</span>
+                            <span class="font-mono">117,322.0</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Final Sell Position (A11 = A10 - 5):</span>
+                            <span class="font-mono">117,317.0</span>
+                        </div>
+                    </div>
+                `
+            },
+            'Contacts': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-contact text-indigo-400 mr-3"><path d="M16 2v2"/><path d="M7 22v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M8 2v2"/><circle cx="12" cy="11" r="3"/><rect x="3" y="4" width="18" height="18" rx="2"/></svg>',
+                prompt: "What are the key contacts for construction projects?",
+                explanation: `
+                    <p>Important contacts for construction projects and services.</p>
+                    <div class="contact-card">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-semibold text-white">Royal Touch</h4>
+                                <p class="text-gray-300">Wall paper design</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-indigo-400 font-mono">99869 92100</p>
+                                <p class="text-gray-400 text-sm">Primary Contact</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            'Project Discussions': {
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list text-indigo-400 mr-3"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
-                prompt: "Define the **Critical Path Method (CPM)** in project planning.",
+                prompt: "What are the current project discussion points?",
                 explanation: `
-                    <p>The Critical Path Method (CPM) is an algorithm for scheduling a set of project activities. It is essential for determining the minimum time required to complete the project. It achieves this by identifying the **critical path**—the longest sequence of tasks that must be completed on time for the project to finish on schedule.</p>
-                    <p><strong>CPM Key Terms:</strong></p>
-                    <ul class="list-disc list-inside ml-4 space-y-1">
-                        <li><strong>Critical Path:</strong> Any delay to a task on this path will delay the entire project. Tasks on this path have zero 'float' or 'slack'.</li>
-                        <li><strong>Float (Slack):</strong> The amount of time a task can be delayed without delaying the project finish date.</li>
-                        <li><strong>Early Start/Finish (ES/EF):</strong> The earliest possible time a task can begin and end.</li>
-                        <li><strong>Late Start/Finish (LS/LF):</strong> The latest possible time a task can begin and end without delaying the project.</li>
-                    </ul>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Significance:</strong> CPM allows construction managers to prioritize resources and monitoring efforts toward the activities that pose the greatest risk to the project's deadline.
-                    </p>
+                    <p>Key discussion points for ongoing construction projects.</p>
+                    <div class="project-section">
+                        <h3 class="text-lg font-semibold text-green-400 mb-3">A) Dilli Tea Estate Bungalow</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>External paint finishes schedule not received from architect</li>
+                            <li>Simplified Porch area design not received from architect</li>
+                            <li>Sample selection for alternate tiles from local vendor</li>
+                            <li>Furniture designs for bar counter, reception counter pending</li>
+                        </ol>
+                    </div>
+                    <div class="project-section">
+                        <h3 class="text-lg font-semibold text-green-400 mb-3">B) Hukanphukri - Central Workshop</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                            <li>Appointment of Site Engineer</li>
+                            <li>Appointment of Store staff</li>
+                            <li>Engagement of labour team for foundation work</li>
+                        </ol>
+                    </div>
                 `
             },
-            'Environmental Engineering': {
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-leaf text-indigo-400 mr-3"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
-                prompt: "What is the **Biochemical Oxygen Demand (BOD)**?",
+            'Expenses': {
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet text-indigo-400 mr-3"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',
+                prompt: "What are the recent project expenses?",
                 explanation: `
-                    <p>Biochemical Oxygen Demand (BOD) is a measure of the amount of dissolved oxygen (DO) consumed by aerobic biological microorganisms while breaking down organic matter in a sample of water. It is a critical parameter in wastewater treatment and environmental water quality.</p>
-                    <p><strong>BOD in Practice:</strong></p>
-                    <ul class="list-disc list-inside ml-4 space-y-1">
-                        <li><strong>High BOD:</strong> Indicates a high concentration of biodegradable organic material. If discharged into a river, it will rapidly deplete the dissolved oxygen, leading to the death of fish and other aquatic life.</li>
-                        <li><strong>Wastewater Treatment:</strong> The primary goal of a biological wastewater treatment plant is to significantly reduce the BOD of the influent water before discharge.</li>
-                        <li><strong>BOD5:</strong> The standard test measures the oxygen demand over a five-day incubation period ($\\text{BOD}_5$) at 20°C.</li>
-                    </ul>
-                    <p class="mt-4 p-3 bg-gray-700 rounded-lg border border-indigo-500">
-                        <strong>Water Quality Standard:</strong> Treated municipal wastewater typically has a $\\text{BOD}_5$ limit of 20 to 30 mg/L before it can be safely discharged into a receiving body of water.
-                    </p>
+                    <p>Detailed expense tracking for construction projects.</p>
+                    <div class="calculation-box">
+                        <h3 class="text-lg font-semibold text-indigo-400 mb-3">Expense Summary</h3>
+                        <div class="calculation-row">
+                            <span>Total Expenses Recorded:</span>
+                            <span class="font-mono">₹21,791.00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Number of Expense Items:</span>
+                            <span class="font-mono">30 items</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Date Range:</span>
+                            <span class="font-mono">Sep 28 - Oct 18, 2025</span>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-medium mt-6 mb-3 text-indigo-300">Sample Expenses</h3>
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <div class="expense-item">
+                            <div>
+                                <div class="font-medium">Labor payment</div>
+                                <div class="text-sm text-gray-400">OHO • Sep 29, 2025</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-mono text-red-400">₹1,200.00</div>
+                            </div>
+                        </div>
+                        <div class="expense-item">
+                            <div>
+                                <div class="font-medium">AC dismantling</div>
+                                <div class="text-sm text-gray-400">OHO • Oct 4, 2025</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-mono text-red-400">₹2,000.00</div>
+                            </div>
+                        </div>
+                        <div class="expense-item">
+                            <div>
+                                <div class="font-medium">Local purchase</div>
+                                <div class="text-sm text-gray-400">Hukanphukri • Oct 7, 2025</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-mono text-red-400">₹4,551.00</div>
+                            </div>
+                        </div>
+                    </div>
                 `
             }
         };
 
         // --- Topic Display Logic ---
-
         const explanationPanel = document.getElementById('explanation-panel');
         const explanationTitle = document.getElementById('explanation-title');
         const explanationContent = document.getElementById('explanation-content');
-        const quickToolsPanel = document.getElementById('quick-tools-panel');
         const aiAssistantPanel = document.getElementById('ai-assistant-panel');
-        const updatesPanel = document.getElementById('updates-panel');
 
         function showTopicContent(topicName) {
             const data = topicContent[topicName];
-
             if (data) {
-                // Set content
                 explanationTitle.innerHTML = `${data.icon} ${topicName}`;
                 explanationContent.innerHTML = `
                     <h3 class="text-xl font-medium text-indigo-400 mb-3">${data.prompt}</h3>
                     ${data.explanation}
                 `;
-
-                // Show explanation panel with animation
                 explanationPanel.classList.remove('hidden');
                 explanationPanel.classList.add('slide-in-right');
-
-                // Hide other panels
-                quickToolsPanel.classList.add('hidden');
                 aiAssistantPanel.classList.add('hidden');
-                updatesPanel.classList.add('hidden');
-
-                // Scroll to the top of the explanation panel
                 explanationPanel.scrollIntoView({
                     behavior: 'smooth'
                 });
-
             } else {
                 alert(`Content for topic "${topicName}" is not available yet.`);
             }
         }
 
         function hideTopicContent() {
-            // Hide explanation panel
             explanationPanel.classList.add('hidden');
             explanationPanel.classList.remove('slide-in-right');
-
-            // Show other panels
-            quickToolsPanel.classList.remove('hidden');
             aiAssistantPanel.classList.remove('hidden');
-            updatesPanel.classList.remove('hidden');
         }
 
-        // --- Existing Search Functionality (Modified to use display: block/none) ---
+        // --- Search Functionality ---
         document.getElementById('topic-search').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const topicCards = document.querySelectorAll('.resource-card');
-
             topicCards.forEach(card => {
                 const title = card.querySelector('h3').textContent.toLowerCase();
                 const content = card.textContent.toLowerCase();
-
                 if (title.includes(searchTerm) || content.includes(searchTerm)) {
                     card.style.display = 'block';
                 } else {
@@ -449,7 +999,7 @@
             });
         });
 
-        // Add animation delays to cards (Existing logic)
+        // Add animation delays to cards
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.animate-fade-in-up');
             cards.forEach((card, index) => {
@@ -458,6 +1008,5 @@
         });
     </script>
 </body>
-
 
 </html>
