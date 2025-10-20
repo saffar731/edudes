@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Diary</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Load Lucide Icons for the UI -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+         :root {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Custom scrollbar for a cleaner look */
+        
+         ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: rgba(100, 100, 100, 0.5);
+            border-radius: 4px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: rgba(30, 30, 30, 0.5);
+        }
+        /* Custom styles for the editor area */
+        
+        #editor-title:focus,
+        #editor-content:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        
+        .sidebar-item-active {
+            background-color: rgba(55, 65, 81, 0.7);
+            border-left: 4px solid #818cf8;
+        }
+        /* Mobile sidebar */
+        
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100vh;
+                z-index: 40;
+                width: 85%;
+                max-width: 280px;
+                top: 0;
+                left: 0;
+            }
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            #mobile-overlay {
+                display: none;
+            }
+            #mobile-overlay.mobile-open {
+                display: block;
+                opacity: 1;
+            }
+            #editor-area {
+                width: 100vw;
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-black text-gray-200 overflow-x-hidden">
+    <div id="app-container" class="flex w-full min-h-screen">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg text-white shadow-lg">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+
+        <!-- Mobile Overlay -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-70 z-30 hidden"></div>
+
+        <!-- Sidebar (Entry List) -->
+        <aside id="sidebar" class="w-64 bg-gray-900 border-r border-gray-800 p-4 flex flex-col md:static fixed h-full z-40">
+            <!-- App Header & User Info -->
+            <div class="mb-6 pb-4 border-b border-gray-800 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-black text-indigo-400">Office Diary</h1>
+                    <p class="text-xs mt-1 text-gray-500 truncate">
+                        User: <span id="user-id-display">Local User</span>
+                    </p>
+                </div>
+                <!-- Close button for mobile -->
+                <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- New Entry Button -->
+            <div class="space-y-3 mb-6">
+                <button id="new-entry-btn" class="w-full flex items-center justify-center p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-indigo-600/30">
+                    <i data-lucide="plus" class="w-5 h-5 mr-2"></i>
+                    New Entry
+                </button>
+            </div>
+
+            <!-- Entry List Container -->
+            <div id="entries-list" class="flex-grow overflow-y-auto space-y-2">
+                <div class="text-center text-sm text-gray-500 pt-4" id="loading-indicator">
+                    <i data-lucide="loader-circle" class="w-5 h-5 animate-spin mx-auto mb-1"></i> Loading Entries...
+                </div>
+            </div>
+
+            <!-- Export/Import Controls -->
+            <div class="pt-4 mt-4 border-t border-gray-800 space-y-2">
+                <button id="export-btn" class="w-full flex items-center justify-center p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-colors">
+                    <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                    Export Data
+                </button>
+                <button id="import-btn" class="w-full flex items-center justify-center p-2 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-lg transition-colors">
+                    <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
+                    Import Data
+                </button>
+                <input type="file" id="import-file" class="hidden" accept=".json">
+            </div>
+        </aside>
+
+        <!-- Main Editor Area -->
+        <main id="editor-area" class="flex-1 bg-gray-900 p-4 md:p-6 flex flex-col min-h-screen w-full">
+            <!-- Mobile Header -->
+            <div class="md:hidden flex items-center justify-between mb-4 pt-2">
+                <h1 class="text-xl font-bold text-indigo-400">Office Diary</h1>
+                <div class="flex space-x-2">
+                    <button id="mobile-save-btn" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors" disabled>
+                        <i data-lucide="save" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <input type="text" id="editor-title" placeholder="Untitled Entry..." class="text-3xl md:text-4xl font-bold bg-transparent border-b border-gray-700 pb-2 placeholder-gray-500 resize-none w-full text-white mb-4">
+
+            <textarea id="editor-content" placeholder="Start writing your thoughts here..." class="flex-1 bg-transparent text-lg resize-none p-2 placeholder-gray-500 focus:ring-0 w-full text-gray-200 mb-4"></textarea>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between items-center pt-4 border-t border-gray-800 mt-auto">
+                <div id="last-saved-info" class="text-sm text-gray-500 italic">
+                    Select an entry or start a new one.
+                </div>
+                <div class="space-x-3">
+                    <button id="delete-btn" class="px-4 py-2 text-red-400 hover:bg-red-400/10 rounded-lg font-medium transition-colors duration-200 opacity-50 cursor-not-allowed" disabled>
+                        <i data-lucide="trash-2" class="w-5 h-5 inline mr-1"></i> <span class="hidden md:inline">Delete</span>
+                    </button>
+                    <button id="save-btn" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md shadow-indigo-600/30 transition-all duration-200" disabled>
+                        <i data-lucide="save" class="w-5 h-5 inline mr-1"></i> <span class="hidden md:inline">Save Entry</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-6 border border-gray-700">
+            <h3 class="text-xl font-bold text-white">Confirm Deletion</h3>
+            <p class="text-gray-400">Are you sure you want to delete this diary entry? This action cannot be undone.</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium text-white">Cancel</button>
+                <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Success Modal -->
+    <div id="export-success-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-6 border border-gray-700">
+            <div class="flex items-center justify-center text-green-500">
+                <i data-lucide="check-circle" class="w-12 h-12"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white text-center">Export Successful</h3>
+            <p class="text-gray-400 text-center">Your diary data has been downloaded successfully.</p>
+            <div class="flex justify-center">
+                <button id="close-export-modal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Success Modal -->
+    <div id="import-success-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl space-y-6 border border-gray-700">
+            <div class="flex items-center justify-center text-green-500">
+                <i data-lucide="check-circle" class="w-12 h-12"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white text-center">Import Successful</h3>
+            <p id="import-message" class="text-gray-400 text-center"></p>
+            <div class="flex justify-center">
+                <button id="close-import-modal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DEBOUNCE/AUTOSAVE CONSTANTS ---
+        const AUTOSAVE_DELAY_MS = 1500;
+
+        // --- GLOBAL STATE ---
+        let entries = [];
+        let currentEntryId = null;
+        const TITLE_CHAR_LIMIT = 80;
+        const MIN_CONTENT_LENGTH = 10;
+
+        // --- STORAGE KEYS ---
+        const STORAGE_KEY = 'office_diary_entries';
+
+        // --- DOM Elements ---
+        const userIdDisplay = document.getElementById('user-id-display');
+        const entriesList = document.getElementById('entries-list');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const newEntryBtn = document.getElementById('new-entry-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const editorTitle = document.getElementById('editor-title');
+        const editorContent = document.getElementById('editor-content');
+        const lastSavedInfo = document.getElementById('last-saved-info');
+        const deleteModal = document.getElementById('delete-modal');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
+        const exportSuccessModal = document.getElementById('export-success-modal');
+        const closeExportModal = document.getElementById('close-export-modal');
+        const importSuccessModal = document.getElementById('import-success-modal');
+        const closeImportModal = document.getElementById('close-import-modal');
+        const importMessage = document.getElementById('import-message');
+
+        // Mobile elements
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeSidebar = document.getElementById('close-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const mobileSaveBtn = document.getElementById('mobile-save-btn');
+
+        // --- UTILITY FUNCTIONS ---
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        function formatTimestamp(timestamp) {
+            if (timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            return 'Just now';
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // --- MOBILE MENU FUNCTIONS ---
+        function openMobileSidebar() {
+            sidebar.classList.add('mobile-open');
+            mobileOverlay.classList.add('mobile-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            sidebar.classList.remove('mobile-open');
+            mobileOverlay.classList.remove('mobile-open');
+            document.body.style.overflow = '';
+        }
+
+        // --- DATA MANAGEMENT ---
+        function saveEntriesToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            } catch (e) {
+                console.error("Error saving to localStorage:", e);
+                lastSavedInfo.textContent = 'Error saving entry. Storage might be full.';
+            }
+        }
+
+        function loadEntriesFromStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    entries = JSON.parse(stored);
+                    entries = entries.map(entry => {
+                        if (!entry.id) entry.id = generateId();
+                        if (!entry.createdAt) entry.createdAt = Date.now();
+                        if (!entry.updatedAt) entry.updatedAt = Date.now();
+                        return entry;
+                    });
+                } else {
+                    entries = [];
+                }
+            } catch (e) {
+                console.error("Error loading from localStorage:", e);
+                entries = [];
+            }
+        }
+
+        function exportEntries() {
+            const dataStr = JSON.stringify(entries, null, 2);
+            const dataBlob = new Blob([dataStr], {
+                type: 'application/json'
+            });
+
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `office-diary-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            exportSuccessModal.classList.remove('hidden');
+        }
+
+        function importEntries(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedEntries = JSON.parse(e.target.result);
+
+                    if (!Array.isArray(importedEntries)) {
+                        throw new Error('Invalid file format. Expected an array of entries.');
+                    }
+
+                    const validEntries = importedEntries.filter(entry =>
+                        entry && typeof entry.title === 'string' && typeof entry.content === 'string'
+                    );
+
+                    if (validEntries.length === 0) {
+                        throw new Error('No valid entries found in the file.');
+                    }
+
+                    const existingIds = new Set(entries.map(entry => entry.id));
+                    const newEntries = validEntries.filter(entry => !existingIds.has(entry.id));
+
+                    const updatedEntries = newEntries.map(entry => ({
+                        ...entry,
+                        id: generateId(),
+                        createdAt: entry.createdAt || Date.now(),
+                        updatedAt: Date.now()
+                    }));
+
+                    entries = [...entries, ...updatedEntries];
+                    saveEntriesToStorage();
+                    renderEntries();
+
+                    importMessage.textContent = `Successfully imported ${updatedEntries.length} entries.`;
+                    importSuccessModal.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Error importing entries:', error);
+                    alert('Error importing entries: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- EDITOR FUNCTIONS ---
+        function disableEditor() {
+            currentEntryId = null;
+            editorTitle.value = '';
+            editorContent.value = '';
+            lastSavedInfo.textContent = 'Select an entry or start a new one.';
+            saveBtn.disabled = true;
+            saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            deleteBtn.disabled = true;
+            deleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            mobileSaveBtn.disabled = true;
+            mobileSaveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function updateButtonStates() {
+            const title = editorTitle.value.trim();
+            const content = editorContent.value.trim();
+            const isValid = title.length > 0 && content.length >= MIN_CONTENT_LENGTH;
+
+            saveBtn.disabled = !isValid;
+            saveBtn.classList.toggle('opacity-50', !isValid);
+            saveBtn.classList.toggle('cursor-not-allowed', !isValid);
+
+            mobileSaveBtn.disabled = !isValid;
+            mobileSaveBtn.classList.toggle('opacity-50', !isValid);
+            mobileSaveBtn.classList.toggle('cursor-not-allowed', !isValid);
+
+            const canDelete = currentEntryId !== null;
+            deleteBtn.disabled = !canDelete;
+            deleteBtn.classList.toggle('opacity-50', !canDelete);
+            deleteBtn.classList.toggle('cursor-not-allowed', !canDelete);
+        }
+
+        function loadEntry(entryId) {
+            const entry = entries.find(e => e.id === entryId);
+            if (!entry) {
+                console.error('Entry not found:', entryId);
+                return;
+            }
+
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('sidebar-item-active');
+            });
+
+            const itemElement = document.getElementById(`entry-${entryId}`);
+            if (itemElement) {
+                itemElement.classList.add('sidebar-item-active');
+            }
+
+            currentEntryId = entryId;
+            editorTitle.value = entry.title || '';
+            editorContent.value = entry.content || '';
+            lastSavedInfo.textContent = `Last saved: ${formatTimestamp(entry.updatedAt)}`;
+            updateButtonStates();
+
+            if (window.innerWidth < 768) {
+                closeMobileSidebar();
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderEntries() {
+            entriesList.innerHTML = '';
+            loadingIndicator.style.display = 'none';
+
+            if (entries.length === 0) {
+                entriesList.innerHTML = `
+                    <p class="text-center text-sm text-gray-500 pt-4">
+                        No entries yet. Click "New Entry" to start.
+                    </p>
+                `;
+                disableEditor();
+                return;
+            }
+
+            entries.sort((a, b) => {
+                const dateA = a.updatedAt || new Date(0);
+                const dateB = b.updatedAt || new Date(0);
+                return dateB - dateA;
+            });
+
+            entries.forEach(entry => {
+                const dateString = entry.updatedAt ?
+                    new Date(entry.updatedAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    }) :
+                    'New';
+
+                const entryElement = document.createElement('div');
+                entryElement.id = `entry-${entry.id}`;
+                entryElement.className = 'sidebar-item p-3 rounded-lg cursor-pointer hover:bg-gray-800 transition-colors duration-200 text-gray-300';
+                entryElement.innerHTML = `
+                    <p class="font-medium text-sm truncate">${entry.title || 'Untitled Entry'}</p>
+                    <p class="text-xs text-gray-500">${dateString}</p>
+                `;
+                entryElement.addEventListener('click', () => loadEntry(entry.id));
+                entriesList.appendChild(entryElement);
+            });
+
+            if (currentEntryId) {
+                loadEntry(currentEntryId);
+            } else if (entries.length > 0) {
+                loadEntry(entries[0].id);
+            }
+        }
+
+        function _saveEntryCore(isAutosave = false) {
+            const title = editorTitle.value.trim().substring(0, TITLE_CHAR_LIMIT);
+            const content = editorContent.value.trim();
+
+            if (title.length === 0 || content.length < MIN_CONTENT_LENGTH) {
+                if (isAutosave && (title.length > 0 || content.length > 0)) {
+                    lastSavedInfo.textContent = 'Draft unsaved: Title is required and content must be at least 10 characters.';
+                }
+                return;
+            }
+
+            try {
+                const now = Date.now();
+                const saveType = isAutosave ? 'Autosaved' : 'Entry saved';
+                const saveTime = formatTimestamp(now);
+
+                if (currentEntryId) {
+                    const entryIndex = entries.findIndex(e => e.id === currentEntryId);
+                    if (entryIndex !== -1) {
+                        entries[entryIndex] = {
+                            ...entries[entryIndex],
+                            title: title,
+                            content: content,
+                            updatedAt: now
+                        };
+                    }
+                } else {
+                    const newEntry = {
+                        id: generateId(),
+                        title: title,
+                        content: content,
+                        createdAt: now,
+                        updatedAt: now
+                    };
+                    entries.unshift(newEntry);
+                    currentEntryId = newEntry.id;
+                }
+
+                saveEntriesToStorage();
+                renderEntries();
+                lastSavedInfo.textContent = `${saveType} successfully at ${saveTime}`;
+                updateButtonStates();
+
+            } catch (e) {
+                console.error("Error saving entry: ", e);
+                lastSavedInfo.textContent = 'Error saving entry. See console for details.';
+            }
+        }
+
+        function saveEntry() {
+            _saveEntryCore(false);
+        }
+
+        function deleteCurrentEntry() {
+            if (!currentEntryId) return;
+
+            try {
+                entries = entries.filter(entry => entry.id !== currentEntryId);
+                saveEntriesToStorage();
+
+                const deletedId = currentEntryId;
+                currentEntryId = null;
+                disableEditor();
+
+                renderEntries();
+                deleteModal.classList.add('hidden');
+                console.log("Document successfully deleted with ID:", deletedId);
+
+            } catch (e) {
+                console.error("Error removing document: ", e);
+                lastSavedInfo.textContent = 'Error deleting entry. See console for details.';
+            }
+        }
+
+        // --- INITIALIZATION ---
+        function initApp() {
+            loadEntriesFromStorage();
+            renderEntries();
+            disableEditor();
+            lucide.createIcons();
+        }
+
+        // --- EVENT LISTENERS ---
+        const debouncedSaveEntry = debounce(() => _saveEntryCore(true), AUTOSAVE_DELAY_MS);
+
+        editorTitle.addEventListener('input', () => {
+            updateButtonStates();
+            if (editorTitle.value.trim().length > 0 || editorContent.value.trim().length > 0) {
+                debouncedSaveEntry();
+            }
+        });
+
+        editorContent.addEventListener('input', () => {
+            updateButtonStates();
+            if (editorTitle.value.trim().length > 0 || editorContent.value.trim().length > 0) {
+                debouncedSaveEntry();
+            }
+        });
+
+        saveBtn.addEventListener('click', saveEntry);
+        mobileSaveBtn.addEventListener('click', saveEntry);
+
+        newEntryBtn.addEventListener('click', () => {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('sidebar-item-active');
+            });
+
+            disableEditor();
+            lastSavedInfo.textContent = 'New entry started.';
+            updateButtonStates();
+
+            if (window.innerWidth < 768) {
+                closeMobileSidebar();
+            }
+        });
+
+        deleteBtn.addEventListener('click', () => {
+            if (currentEntryId) {
+                deleteModal.classList.remove('hidden');
+            }
+        });
+
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteModal.classList.add('hidden');
+        });
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            deleteCurrentEntry();
+        });
+
+        exportBtn.addEventListener('click', exportEntries);
+
+        importBtn.addEventListener('click', () => {
+            importFile.click();
+        });
+
+        importFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                importEntries(e.target.files[0]);
+                e.target.value = '';
+            }
+        });
+
+        closeExportModal.addEventListener('click', () => {
+            exportSuccessModal.classList.add('hidden');
+        });
+
+        closeImportModal.addEventListener('click', () => {
+            importSuccessModal.classList.add('hidden');
+        });
+
+        mobileMenuButton.addEventListener('click', openMobileSidebar);
+        closeSidebar.addEventListener('click', closeMobileSidebar);
+        mobileOverlay.addEventListener('click', closeMobileSidebar);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                closeMobileSidebar();
+            }
+        });
+
+        window.onload = initApp;
+    </script>
+</body>
+
+</html>
