@@ -3,573 +3,504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retaining Wall Calculator - Professional</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Retaining Wall Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --main-bg: #0f1114;
+            --card-bg: #1e2125;
+            --card-border: #2a2d32;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --input-bg: #2a2d32;
+            --input-border: #3a3d42;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #111827;
-            overflow-x: hidden;
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .sidebar::-webkit-scrollbar-thumb {
-            background-color: #4b5563;
-            border-radius: 3px;
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a1d21, #2a2d32);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow);
         }
-        .sidebar::-webkit-scrollbar-track {
-            background-color: #374151;
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
         }
-        .profile-picture {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #4f46e5;
+        
+        @media (max-width: 1024px) {
+            .calculator-container {
+                grid-template-columns: 1fr;
+            }
         }
-        .profile-picture-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #4f46e5;
+        
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--card-border);
+        }
+        
+        .card h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            font-size: 16px;
+            color: var(--text-primary);
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        
+        .unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .material-breakdown {
+            margin-top: 30px;
+        }
+        
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        .material-name {
+            font-weight: 600;
+        }
+        
+        .material-quantity {
+            color: var(--accent);
+        }
+        
+        .tips-section {
+            margin-top: 40px;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .tip-card {
+            background: var(--input-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .disclaimer {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .calculator-container {
+                gap: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
-    <!-- Navigation Bar -->
-    <header class="bg-gray-900 shadow-xl sticky top-0 z-10 border-b border-indigo-500/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex-shrink-0 flex items-center bg-indigo-700/80 p-3 rounded-2xl shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <span class="text-white text-xl font-extrabold tracking-widest">WallCalc Pro</span>
-                </div>
-                <div class="flex items-center space-x-4" id="navbar-actions">
-                    <div id="auth-buttons-container" class="flex space-x-2">
-                        <!-- Auth buttons will be inserted here by JavaScript -->
+<body>
+    <div class="container">
+        <header>
+            <h1>Retaining Wall Calculator</h1>
+            <p class="subtitle">Calculate materials needed for your retaining wall project</p>
+        </header>
+        
+        <div class="calculator-container">
+            <div class="card">
+                <h3>Wall Dimensions</h3>
+                <form id="wall-calculator">
+                    <div class="form-group">
+                        <label for="wall-length">Wall Length <span class="unit">(feet)</span></label>
+                        <input type="number" id="wall-length" min="1" step="0.5" value="20" required>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="wall-height">Wall Height <span class="unit">(feet)</span></label>
+                        <input type="number" id="wall-height" min="1" step="0.5" value="4" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="block-type">Block Type</label>
+                        <select id="block-type">
+                            <option value="standard">Standard (12" x 8")</option>
+                            <option value="large">Large (18" x 12")</option>
+                            <option value="small">Small (8" x 6")</option>
+                            <option value="custom">Custom Size</option>
+                        </select>
+                    </div>
+                    
+                    <div id="custom-block-size" style="display: none;">
+                        <div class="form-group">
+                            <label for="block-length">Block Length <span class="unit">(inches)</span></label>
+                            <input type="number" id="block-length" min="1" step="0.5" value="12">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="block-height">Block Height <span class="unit">(inches)</span></label>
+                            <input type="number" id="block-height" min="1" step="0.5" value="8">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="base-depth">Base Depth <span class="unit">(inches)</span></label>
+                        <input type="number" id="base-depth" min="2" step="0.5" value="6">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="drainage-type">Drainage Aggregate</label>
+                        <select id="drainage-type">
+                            <option value="none">None</option>
+                            <option value="gravel">Gravel (3/4")</option>
+                            <option value="crushed" selected>Crushed Stone</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="block-cost">Block Cost <span class="unit">($ per block)</span></label>
+                        <input type="number" id="block-cost" min="0" step="0.01" value="3.50">
+                    </div>
+                    
+                    <button type="button" class="btn" id="calculate-btn">Calculate Materials</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3>Material Estimate</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Wall Blocks</div>
+                        <div class="result-value" id="blocks-count">0</div>
+                        <div class="result-label">blocks</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Base Material</div>
+                        <div class="result-value" id="base-material">0</div>
+                        <div class="result-label">cubic yards</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Drainage Aggregate</div>
+                        <div class="result-value" id="drainage-material">0</div>
+                        <div class="result-label">cubic yards</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Estimated Cost</div>
+                        <div class="result-value" id="estimated-cost">$0</div>
+                        <div class="result-label">materials only</div>
+                    </div>
+                </div>
+                
+                <div class="material-breakdown">
+                    <h3>Detailed Breakdown</h3>
+                    <div class="material-item">
+                        <span class="material-name">Retaining Wall Blocks</span>
+                        <span class="material-quantity" id="detail-blocks">0 blocks</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-name">Base Material (Crushed Stone)</span>
+                        <span class="material-quantity" id="detail-base">0 cubic yards</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-name">Drainage Aggregate</span>
+                        <span class="material-quantity" id="detail-drainage">0 cubic yards</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-name">Geotextile Fabric</span>
+                        <span class="material-quantity" id="detail-fabric">0 sq ft</span>
+                    </div>
+                    <div class="material-item">
+                        <span class="material-name">Wall Caps (if applicable)</span>
+                        <span class="material-quantity" id="detail-caps">0 units</span>
+                    </div>
+                </div>
+                
+                <div class="disclaimer">
+                    <p><strong>Note:</strong> This calculator provides estimates only. Actual material requirements may vary based on site conditions, wall design, and construction methods. Always consult with a professional for critical projects.</p>
                 </div>
             </div>
         </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar w-64 bg-gray-800 border-r border-gray-700 p-4 space-y-4 overflow-y-auto hidden md:block shadow-2xl">
-            <h2 class="text-xl font-semibold text-white border-b border-gray-700 pb-2 mb-4">Calculator Menu</h2>
-            <nav class="space-y-1" id="main-nav">
-                <a href="#" class="flex items-center p-2 text-sm font-medium text-indigo-300 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.414L11 9.586V6z" clip-rule="evenodd" />
-                    </svg> Retaining Wall
-                </a>
-            </nav>
-            <div class="pt-4 mt-4 border-t border-gray-700" id="auth-section">
-                <p class="text-xs text-gray-400 mb-2">
-                    Status: <span id="auth-status" class="font-bold text-orange-400">GUEST</span>
-                </p>
-                <p class="text-xs text-gray-400">
-                    User ID: <span id="user-id" class="break-all font-mono text-gray-300 text-xs">Not logged in</span>
-                </p>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 p-6 lg:p-10 overflow-y-auto bg-gray-900">
-            <!-- Login/Register Form (initially shown) -->
-            <div id="auth-forms" class="max-w-md mx-auto bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-700 fade-in">
-                <h2 class="text-2xl font-bold text-white mb-6 text-center">Welcome to WallCalc Pro</h2>
-                
-                <!-- Login Form -->
-                <div id="login-form" class="space-y-4">
-                    <h3 class="text-xl font-semibold text-white mb-4">Login to Your Account</h3>
-                    <div>
-                        <label for="login-email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                        <input type="email" id="login-email" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="your@email.com" required>
-                    </div>
-                    <div>
-                        <label for="login-password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                        <input type="password" id="login-password" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="••••••••" required>
-                    </div>
-                    <button id="login-btn" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition-colors duration-200">
-                        Login
-                    </button>
-                    <p class="text-center text-gray-400 mt-4">
-                        Don't have an account? 
-                        <button id="show-register" class="text-indigo-400 hover:text-indigo-300 font-medium">Register here</button>
-                    </p>
+        
+        <div class="tips-section">
+            <h3>Retaining Wall Tips</h3>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-title">Proper Base Preparation</div>
+                    <p>A well-compacted base is crucial for wall stability. Excavate to the required depth and use crushed stone for proper drainage.</p>
                 </div>
                 
-                <!-- Register Form (initially hidden) -->
-                <div id="register-form" class="space-y-4 hidden">
-                    <h3 class="text-xl font-semibold text-white mb-4">Create New Account</h3>
-                    
-                    <!-- Profile Picture Upload -->
-                    <div class="flex flex-col items-center mb-4">
-                        <div class="relative">
-                            <img id="profile-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24'%3E%3Cpath fill='%239ca3af' d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" 
-                                 alt="Profile Preview" class="profile-picture-large mb-2">
-                            <input type="file" id="profile-picture" accept="image/*" class="hidden">
-                            <button type="button" id="upload-profile-btn" class="mt-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
-                                Upload Picture
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="register-name" class="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
-                        <input type="text" id="register-name" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="John Doe" required>
-                    </div>
-                    <div>
-                        <label for="register-email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                        <input type="email" id="register-email" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="your@email.com" required>
-                    </div>
-                    <div>
-                        <label for="register-password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                        <input type="password" id="register-password" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="••••••••" required>
-                    </div>
-                    <div>
-                        <label for="register-confirm-password" class="block text-sm font-medium text-gray-300 mb-1">Confirm Password</label>
-                        <input type="password" id="register-confirm-password" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="••••••••" required>
-                    </div>
-                    <button id="register-btn" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition-colors duration-200">
-                        Create Account
-                    </button>
-                    <p class="text-center text-gray-400 mt-4">
-                        Already have an account? 
-                        <button id="show-login" class="text-indigo-400 hover:text-indigo-300 font-medium">Login here</button>
-                    </p>
+                <div class="tip-card">
+                    <div class="tip-title">Drainage Considerations</div>
+                    <p>Always include drainage behind retaining walls to prevent water pressure buildup. Use perforated pipe and gravel backfill.</p>
                 </div>
                 
-                <div id="auth-message" class="mt-4 p-3 rounded-lg hidden"></div>
-            </div>
-
-            <!-- Calculator (initially hidden) -->
-            <div id="calculator-content" class="hidden fade-in">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-3xl font-bold text-white">Retaining Wall Design Calculator</h1>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <img id="navbar-profile-pic" src="" alt="Profile" class="profile-picture">
-                            <span id="navbar-user-name" class="text-white font-medium"></span>
-                        </div>
-                        <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                            Logout
-                        </button>
-                    </div>
+                <div class="tip-card">
+                    <div class="tip-title">Wall Height Limits</div>
+                    <p>For walls over 3-4 feet, consider consulting an engineer. Taller walls may require special design considerations.</p>
                 </div>
                 
-                <p class="text-gray-400 mb-8">
-                    Perform calculations to check stability and required dimensions for a gravity or cantilever retaining wall.
-                </p>
-
-                <div class="bg-gray-800 p-6 md:p-8 rounded-xl shadow-2xl transition-all duration-300 border border-gray-700">
-                    <form id="wall-form">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Input 1: Wall Height -->
-                            <div class="space-y-2">
-                                <label for="wallHeight" class="text-sm font-medium text-gray-300">Wall Height (H) [m]</label>
-                                <input type="number" id="wallHeight" value="3.5" min="0.1" step="0.1" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                            </div>
-                            <!-- Input 2: Wall Length -->
-                            <div class="space-y-2">
-                                <label for="wallLength" class="text-sm font-medium text-gray-300">Wall Length [m]</label>
-                                <input type="number" id="wallLength" value="20" min="1" step="1" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                            </div>
-                            <!-- Input 3: Soil Angle of Internal Friction (Phi) -->
-                            <div class="space-y-2">
-                                <label for="soilPhi" class="text-sm font-medium text-gray-300">Soil Internal Friction (φ) [degrees]</label>
-                                <input type="number" id="soilPhi" value="30" min="25" max="40" step="1" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                            </div>
-                            <!-- Input 4: Soil Unit Weight (Gamma) -->
-                            <div class="space-y-2">
-                                <label for="soilGamma" class="text-sm font-medium text-gray-300">Soil Unit Weight (γ) [kN/m³]</label>
-                                <input type="number" id="soilGamma" value="18" min="15" step="0.5" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required>
-                            </div>
-                        </div>
-
-                        <div id="message-box" class="mt-6 p-4 rounded-lg hidden"></div>
-
-                        <div class="mt-8">
-                            <button type="submit" id="calculate-btn" class="w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center">
-                                Calculate Wall Forces
-                            </button>
-                        </div>
-                    </form>
-
-                    <div id="results" class="mt-10 p-6 bg-gray-700 border border-gray-600 rounded-xl shadow-inner hidden">
-                        <h3 class="text-xl font-semibold text-white mb-4">Calculation Results</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="results-grid">
-                            <!-- Results injected here -->
-                        </div>
-                    </div>
+                <div class="tip-card">
+                    <div class="tip-title">Local Regulations</div>
+                    <p>Check with your local building department for permits and regulations regarding retaining wall construction.</p>
                 </div>
             </div>
-        </main>
+        </div>
+        
+        <footer>
+            <p>Retaining Wall Calculator &copy; 2023 | For estimation purposes only</p>
+        </footer>
     </div>
 
     <script>
-        // User management system
-        const USER_STORAGE_KEY = 'wallcalc_users';
-        const CURRENT_USER_KEY = 'wallcalc_current_user';
-        let currentUser = null;
-        let calculationInProgress = false;
-
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            setupEventListeners();
-        });
-
-        function initializeApp() {
-            // Check if user is already logged in
-            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
-            if (storedUser) {
-                currentUser = JSON.parse(storedUser);
-                showCalculator();
-                updateUIForUser();
-            } else {
-                showAuthForms();
-            }
-        }
-
-        function setupEventListeners() {
-            // Auth form toggling
-            document.getElementById('show-register').addEventListener('click', showRegisterForm);
-            document.getElementById('show-login').addEventListener('click', showLoginForm);
+            const blockTypeSelect = document.getElementById('block-type');
+            const customBlockSize = document.getElementById('custom-block-size');
+            const calculateBtn = document.getElementById('calculate-btn');
             
-            // Auth actions
-            document.getElementById('login-btn').addEventListener('click', handleLogin);
-            document.getElementById('register-btn').addEventListener('click', handleRegister);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            
-            // Profile picture upload
-            document.getElementById('upload-profile-btn').addEventListener('click', () => {
-                document.getElementById('profile-picture').click();
+            // Show/hide custom block size inputs
+            blockTypeSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customBlockSize.style.display = 'block';
+                } else {
+                    customBlockSize.style.display = 'none';
+                }
             });
-            document.getElementById('profile-picture').addEventListener('change', handleProfilePictureUpload);
             
-            // Calculator form
-            document.getElementById('wall-form').addEventListener('submit', handleCalculation);
-        }
-
-        function showAuthForms() {
-            document.getElementById('auth-forms').classList.remove('hidden');
-            document.getElementById('calculator-content').classList.add('hidden');
-            showLoginForm();
-        }
-
-        function showCalculator() {
-            document.getElementById('auth-forms').classList.add('hidden');
-            document.getElementById('calculator-content').classList.remove('hidden');
-        }
-
-        function showLoginForm() {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-            clearAuthMessage();
-        }
-
-        function showRegisterForm() {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('register-form').classList.remove('hidden');
-            clearAuthMessage();
-        }
-
-        function clearAuthMessage() {
-            const messageBox = document.getElementById('auth-message');
-            messageBox.classList.add('hidden');
-            messageBox.textContent = '';
-        }
-
-        function showAuthMessage(message, type) {
-            const messageBox = document.getElementById('auth-message');
-            messageBox.textContent = message;
-            messageBox.classList.remove('hidden', 'bg-green-900/30', 'text-green-300', 'bg-red-900/30', 'text-red-300');
-            messageBox.classList.add(
-                type === 'success' ? 'bg-green-900/30' : 'bg-red-900/30',
-                type === 'success' ? 'text-green-300' : 'text-red-300',
-                'border',
-                type === 'success' ? 'border-green-700' : 'border-red-700'
-            );
-        }
-
-        function handleProfilePictureUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                // Check if file is an image
-                if (!file.type.match('image.*')) {
-                    showAuthMessage('Please select an image file', 'error');
-                    return;
+            // Calculate button event
+            calculateBtn.addEventListener('click', calculateMaterials);
+            
+            // Initial calculation
+            calculateMaterials();
+            
+            function calculateMaterials() {
+                // Get input values
+                const wallLength = parseFloat(document.getElementById('wall-length').value);
+                const wallHeight = parseFloat(document.getElementById('wall-height').value);
+                const blockType = document.getElementById('block-type').value;
+                const baseDepth = parseFloat(document.getElementById('base-depth').value);
+                const drainageType = document.getElementById('drainage-type').value;
+                const blockCostPer = parseFloat(document.getElementById('block-cost').value);
+                
+                // Block dimensions based on type
+                let blockLength, blockHeight;
+                
+                switch(blockType) {
+                    case 'standard':
+                        blockLength = 12; // inches
+                        blockHeight = 8;  // inches
+                        break;
+                    case 'large':
+                        blockLength = 18; // inches
+                        blockHeight = 12; // inches
+                        break;
+                    case 'small':
+                        blockLength = 8;  // inches
+                        blockHeight = 6;  // inches
+                        break;
+                    case 'custom':
+                        blockLength = parseFloat(document.getElementById('block-length').value);
+                        blockHeight = parseFloat(document.getElementById('block-height').value);
+                        break;
                 }
                 
-                // Check file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    showAuthMessage('Image size should be less than 2MB', 'error');
-                    return;
+                // Convert to feet for calculations
+                const blockLengthFt = blockLength / 12;
+                const blockHeightFt = blockHeight / 12;
+                const baseDepthFt = baseDepth / 12;
+                
+                // Calculate number of blocks
+                const blocksPerCourse = Math.ceil(wallLength / blockLengthFt);
+                const courses = Math.ceil(wallHeight / blockHeightFt);
+                const totalBlocks = blocksPerCourse * courses;
+                
+                // Calculate base material (cubic yards)
+                // Base width is typically 1.5-2 times the wall height
+                const baseWidth = wallHeight * 1.5; // feet
+                const baseVolumeCuFt = wallLength * baseWidth * baseDepthFt;
+                const baseVolumeCuYd = baseVolumeCuFt / 27;
+                
+                // Calculate drainage material (cubic yards)
+                let drainageVolumeCuYd = 0;
+                if (drainageType !== 'none') {
+                    // Assume 12" thickness behind wall
+                    const drainageThickness = 1; // feet
+                    const drainageVolumeCuFt = wallLength * wallHeight * drainageThickness;
+                    drainageVolumeCuYd = drainageVolumeCuFt / 27;
                 }
                 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profile-preview').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleRegister() {
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-            const profilePicture = document.getElementById('profile-preview').src;
-
-            // Validation
-            if (!name || !email || !password) {
-                showAuthMessage('Please fill in all fields', 'error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showAuthMessage('Passwords do not match', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showAuthMessage('Password must be at least 6 characters', 'error');
-                return;
-            }
-
-            // Check if user already exists
-            const users = getUsers();
-            if (users.find(user => user.email === email)) {
-                showAuthMessage('User with this email already exists', 'error');
-                return;
-            }
-
-            // Create new user
-            const newUser = {
-                id: generateId(),
-                name,
-                email,
-                password, // In a real app, this would be hashed
-                profilePicture,
-                createdAt: new Date().toISOString()
-            };
-
-            // Save user
-            users.push(newUser);
-            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users));
-
-            // Log the user in
-            loginUser(newUser);
-            showAuthMessage('Account created successfully!', 'success');
-        }
-
-        function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            if (!email || !password) {
-                showAuthMessage('Please enter both email and password', 'error');
-                return;
-            }
-
-            const users = getUsers();
-            const user = users.find(u => u.email === email && u.password === password);
-
-            if (user) {
-                loginUser(user);
-                showAuthMessage('Login successful!', 'success');
-            } else {
-                showAuthMessage('Invalid email or password', 'error');
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem(CURRENT_USER_KEY);
-            currentUser = null;
-            showAuthForms();
-            updateUIForUser();
-        }
-
-        function loginUser(user) {
-            currentUser = user;
-            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-            showCalculator();
-            updateUIForUser();
-        }
-
-        function updateUIForUser() {
-            if (currentUser) {
-                // Update sidebar
-                document.getElementById('auth-status').textContent = 'LOGGED IN';
-                document.getElementById('auth-status').classList.remove('text-orange-400');
-                document.getElementById('auth-status').classList.add('text-green-400');
-                document.getElementById('user-id').textContent = currentUser.email;
+                // Calculate geotextile fabric (square feet)
+                const fabricArea = wallLength * (wallHeight + baseWidth);
                 
-                // Update navbar
-                document.getElementById('navbar-profile-pic').src = currentUser.profilePicture;
-                document.getElementById('navbar-user-name').textContent = currentUser.name;
-            } else {
-                // Reset UI for guest
-                document.getElementById('auth-status').textContent = 'GUEST';
-                document.getElementById('auth-status').classList.remove('text-green-400');
-                document.getElementById('auth-status').classList.add('text-orange-400');
-                document.getElementById('user-id').textContent = 'Not logged in';
+                // Calculate wall caps (if applicable)
+                const wallCaps = blocksPerCourse;
+                
+                // Calculate estimated cost
+                const blockCost = totalBlocks * blockCostPer;
+                const baseCost = baseVolumeCuYd * 45; // Average $45 per cubic yard
+                const drainageCost = drainageVolumeCuYd * 35; // Average $35 per cubic yard
+                const fabricCost = fabricArea / 100 * 25; // Average $25 per 100 sq ft
+                const capsCost = wallCaps * 4; // Average $4 per cap
+                
+                const totalCost = blockCost + baseCost + drainageCost + fabricCost + capsCost;
+                
+                // Update results
+                document.getElementById('blocks-count').textContent = totalBlocks.toLocaleString();
+                document.getElementById('base-material').textContent = baseVolumeCuYd.toFixed(1);
+                document.getElementById('drainage-material').textContent = drainageVolumeCuYd.toFixed(1);
+                document.getElementById('estimated-cost').textContent = '$' + Math.round(totalCost).toLocaleString();
+                
+                // Update detailed breakdown
+                document.getElementById('detail-blocks').textContent = totalBlocks.toLocaleString() + ' blocks';
+                document.getElementById('detail-base').textContent = baseVolumeCuYd.toFixed(1) + ' cubic yards';
+                document.getElementById('detail-drainage').textContent = drainageVolumeCuYd.toFixed(1) + ' cubic yards';
+                document.getElementById('detail-fabric').textContent = Math.round(fabricArea).toLocaleString() + ' sq ft';
+                document.getElementById('detail-caps').textContent = wallCaps.toLocaleString() + ' units';
             }
-        }
-
-        function getUsers() {
-            const usersJson = localStorage.getItem(USER_STORAGE_KEY);
-            return usersJson ? JSON.parse(usersJson) : [];
-        }
-
-        function generateId() {
-            return 'user_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        /**
-         * Displays a temporary message box.
-         */
-        function showMessage(message, type) {
-            const box = document.getElementById('message-box');
-            if (!box) return;
-
-            box.textContent = message;
-            box.classList.remove('hidden', 'bg-green-900/30', 'text-green-300', 'bg-red-900/30', 'text-red-300');
-            box.classList.add(
-                type === 'success' ? 'bg-green-900/30' : 'bg-red-900/30',
-                type === 'success' ? 'text-green-300' : 'text-red-300',
-                'border',
-                type === 'success' ? 'border-green-700' : 'border-red-700'
-            );
-
-            setTimeout(() => {
-                box.classList.add('hidden');
-            }, 5000);
-        }
-
-        /**
-         * Main function to handle form submission and calculation.
-         */
-        function handleCalculation(e) {
-            e.preventDefault();
-
-            const btn = document.getElementById('calculate-btn');
-
-            if (calculationInProgress || !btn) {
-                return;
-            }
-
-            const resultsDiv = document.getElementById('results');
-
-            // Start loading state
-            calculationInProgress = true;
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Calculating...';
-            resultsDiv.classList.add('hidden');
-
-            // Collect inputs
-            const H = parseFloat(document.getElementById('wallHeight').value);
-            const L = parseFloat(document.getElementById('wallLength').value);
-            const phi = parseFloat(document.getElementById('soilPhi').value);
-            const gamma = parseFloat(document.getElementById('soilGamma').value);
-
-            // Simple validation
-            if (isNaN(H) || isNaN(L) || isNaN(phi) || isNaN(gamma) || H <= 0 || L <= 0) {
-                showMessage("Please ensure all inputs are valid positive numbers.", 'error');
-                calculationInProgress = false;
-                btn.disabled = false;
-                btn.innerHTML = 'Calculate Wall Forces';
-                return;
-            }
-
-            // Simulate a network delay for the actual calculation
-            setTimeout(() => {
-                // --- Retaining Wall Calculation (using Rankine Theory for Active Pressure) ---
-
-                const phiRad = phi * (Math.PI / 180);
-                // Rankine Active Earth Pressure Coefficient (Ka)
-                const Ka = Math.pow(Math.tan(Math.PI / 4 - phiRad / 2), 2);
-                const Ka_display = Ka.toFixed(3);
-
-                // Maximum Pressure at the base (P_max) = γ * H * Ka
-                const P_max = gamma * H * Ka;
-                const P_max_display = P_max.toFixed(2); // kN/m²
-
-                // Total Active Force (Pa) = 0.5 * P_max * H
-                const Pa = 0.5 * P_max * H;
-                const Pa_display = Pa.toFixed(2); // kN/m
-
-                // Force Application Height (H_bar) = H/3
-                const H_bar = H / 3;
-                const H_bar_display = H_bar.toFixed(2); // m
-
-                // Mock assumptions for sliding FOS: Friction factor (f)=0.5, Base Width (B)=0.6H
-                const f = 0.5;
-                const B = 0.6 * H;
-                const W_soil = gamma * B * 1; // Approx. stabilizing weight per meter run
-
-                // Factor of Safety against Sliding (FS_sliding) = (f * W_soil) / Pa
-                const FS_Sliding = (f * W_soil) / Pa;
-                const FS_Sliding_display = FS_Sliding.toFixed(2);
-
-                // --- End Calculation ---
-
-                const resultsGrid = document.getElementById('results-grid');
-
-                // Display results
-                resultsGrid.innerHTML = `
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Active Earth Pressure Coeff. (K<sub>a</sub>)</p>
-                        <p class="text-2xl font-bold text-indigo-400">${Ka_display}</p>
-                    </div>
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Max Pressure (P<sub>max</sub>) [kN/m²]</p>
-                        <p class="text-2xl font-bold text-indigo-400">${P_max_display}</p>
-                    </div>
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Total Active Force (P<sub>a</sub>) [kN/m]</p>
-                        <p class="text-2xl font-bold text-indigo-400">${Pa_display}</p>
-                    </div>
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Force Application Height [m]</p>
-                        <p class="text-2xl font-bold text-indigo-400">${H_bar_display}</p>
-                    </div>
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Sliding Factor of Safety (FS<sub>sliding</sub>)</p>
-                        <p class="text-2xl font-bold ${FS_Sliding > 1.5 ? 'text-green-400' : 'text-red-400'}">${FS_Sliding_display}</p>
-                    </div>
-                    <div class="p-3 bg-gray-800 rounded-lg border border-gray-700 shadow-sm">
-                        <p class="text-sm text-gray-400">Wall Volume (Total) [m³]</p>
-                        <p class="text-2xl font-bold text-indigo-400">${(B * L * H).toFixed(2)}</p>
-                    </div>
-                `;
-
-                resultsDiv.classList.remove('hidden');
-                showMessage("Calculation successful! This calculation is based on Rankine theory.", 'success');
-
-                // Reset loading state
-                calculationInProgress = false;
-                btn.disabled = false;
-                btn.innerHTML = 'Calculate Wall Forces';
-
-            }, 1500); // 1.5 second delay for simulation
-        }
+        });
     </script>
 </body>
 </html>
